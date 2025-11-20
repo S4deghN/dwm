@@ -1,6 +1,7 @@
 /* See LICENSE file for copyright and license details. */
 
 #include "extra.h"
+#include <X11/XF86keysym.h>
 
 /* appearance */
 static const unsigned int borderpx  = 1;        /* border pixel of windows */
@@ -14,10 +15,12 @@ static const char col_gray2[]       = "#444444";
 static const char col_gray3[]       = "#bbbbbb";
 static const char col_gray4[]       = "#eeeeee";
 static const char col_cyan[]        = "#005577";
+static char selbordercolor[]        = "#770000";
+
 static const char *colors[][3]      = {
 	/*               fg         bg         border   */
 	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
-	[SchemeSel]  = { col_gray4, col_cyan,  col_cyan  },
+	[SchemeSel]  = { col_gray4, col_cyan,  selbordercolor  },
 };
 
 /* tagging */
@@ -28,9 +31,14 @@ static const Rule rules[] = {
 	 *	WM_CLASS(STRING) = instance, class
 	 *	WM_NAME(STRING) = title
 	 */
-	/* class      instance    title       tags mask     isfloating   monitor */
-	{ "Gpick",    NULL,       NULL,       0,            1,           -1 },
-	{ "Firefox",  NULL,       NULL,       1 << 8,       0,           -1 },
+	/* class              instance    title       tags mask     isfloating   monitor */
+	{ "Gpick",            NULL,       NULL,       0,            1,           -1 },
+	{ "Nitroge",          NULL,       NULL,       0,            1,           -1 },
+    { "Blueman-manager",  NULL,       NULL,       0,            1,           -1 },
+    { "Pavucontrol",      NULL,       NULL,       0,            1,           -1 },
+    { "Gnome-calculator", NULL,       NULL,       0,            1,           -1 },
+    { "VirtualBox",       NULL,       NULL,       0,            1,           -1 },
+	{ "Firefox",          NULL,       NULL,       1 << 8,       0,           -1 },
 };
 
 /* layout(s) */
@@ -42,8 +50,8 @@ static const int lockfullscreen = 1; /* 1 will force focus on the fullscreen win
 static const Layout layouts[] = {
 	/* symbol     arrange function */
 	{ "[]=",      tile },    /* first entry is default */
-	{ "><>",      NULL },    /* no layout function means floating behavior */
 	{ "[M]",      monocle },
+	{ "><>",      NULL },    /* no layout function means floating behavior */
 };
 
 /* key definitions */
@@ -64,42 +72,57 @@ static const char *termcmd[]  = { "st", NULL };
 // static const char *roficmd[]  = ;
 
 static const Key keys[] = {
-	/* modifier                     key        function        argument */
-	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
-	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
-	{ MODKEY,                       XK_a,      spawn,          {.v = (char*[]){ "rofi", "-show", "drun", NULL } } },
-    { MODKEY,                       XK_r,      spawn,          {.v = (char*[]){ "st", "-e", "ranger", NULL } } },
-	{ MODKEY,                       XK_b,      togglebar,      {0} },
-	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
-	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
-	{ MODKEY,                       XK_n,      incnmaster,     {.i = +1 } },
-	{ MODKEY,                       XK_p,      incnmaster,     {.i = -1 } },
-	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
-	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
-	{ MODKEY,                       XK_Return, zoom,           {0} },
-	{ MODKEY,                       XK_Tab,    view,           {0} },
-	{ MODKEY,                       XK_d,      killclient,     {0} },
-	{ MODKEY,                       XK_t,      setlayout,      {0} },
-	{ MODKEY,                       XK_f,      setlayout,      {0} },
-	{ MODKEY|ShiftMask,             XK_f,      togglefloating, {0} },
-	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
-    { MODKEY|ShiftMask,             XK_r,      self_restart,   {0} },
-	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } },
-	{ MODKEY|ShiftMask,             XK_0,      tag,            {.ui = ~0 } },
-	{ MODKEY,                       XK_comma,  focusmon,       {.i = -1 } },
-	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
-	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
-	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
-	TAGKEYS(                        XK_1,                      0)
-	TAGKEYS(                        XK_2,                      1)
-	TAGKEYS(                        XK_3,                      2)
-	TAGKEYS(                        XK_4,                      3)
-	TAGKEYS(                        XK_5,                      4)
-	TAGKEYS(                        XK_6,                      5)
-	TAGKEYS(                        XK_7,                      6)
-	TAGKEYS(                        XK_8,                      7)
-	TAGKEYS(                        XK_9,                      8)
-	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
+	/* modifier                     key                function        argument */
+	{ MODKEY,                       XK_0,              view,           {.ui = ~0 } },
+	{ MODKEY|ShiftMask,             XK_0,              tag,            {.ui = ~0 } },
+	{ MODKEY,                       XK_comma,          focusmon,       {.i = -1 } },
+	{ MODKEY,                       XK_period,         focusmon,       {.i = +1 } },
+	{ MODKEY|ShiftMask,             XK_comma,          tagmon,         {.i = -1 } },
+	{ MODKEY|ShiftMask,             XK_period,         tagmon,         {.i = +1 } },
+	TAGKEYS(                        XK_1,                              0)
+	TAGKEYS(                        XK_2,                              1)
+	TAGKEYS(                        XK_3,                              2)
+	TAGKEYS(                        XK_4,                              3)
+	TAGKEYS(                        XK_5,                              4)
+	TAGKEYS(                        XK_6,                              5)
+	TAGKEYS(                        XK_7,                              6)
+	TAGKEYS(                        XK_8,                              7)
+	TAGKEYS(                        XK_9,                              8)
+	{ MODKEY,                       XK_p,              spawn,          {.v = dmenucmd } },
+	{ MODKEY|ShiftMask,             XK_Return,         spawn,          {.v = termcmd } },
+	{ MODKEY,                       XK_t,              spawn,          {.v = termcmd } },
+	{ MODKEY,                       XK_a,              spawn,          {.v = (char*[]){ "rofi", "-show", "drun", NULL } } },
+    { MODKEY,                       XK_r,              spawn,          {.v = (char*[]){ "st", "-e", "ranger", NULL } } },
+	{ MODKEY,                       XK_b,              togglebar,      {0} },
+	{ MODKEY,                       XK_j,              focusstack,     {.i = +1 } },
+	{ MODKEY,                       XK_k,              focusstack,     {.i = -1 } },
+	{ MODKEY,                       XK_n,              incnmaster,     {.i = +1 } },
+	{ MODKEY,                       XK_p,              incnmaster,     {.i = -1 } },
+	{ MODKEY,                       XK_h,              setmfact,       {.f = -0.05} },
+	{ MODKEY,                       XK_l,              setmfact,       {.f = +0.05} },
+	{ MODKEY,                       XK_Return,         zoom,           {0} },
+	{ MODKEY,                       XK_Tab,            view,           {0} },
+	{ MODKEY,                       XK_d,              killclient,     {0} },
+	{ MODKEY,                       XK_f,              setlayout,      {0} },
+	{ MODKEY|ShiftMask,             XK_f,              togglefloating, {0} },
+	{ MODKEY,                       XK_bracketright,   nextlayout,     {.i = +1} },
+	{ MODKEY,                       XK_bracketleft,    nextlayout,     {.i = -1} },
+    { MODKEY|ShiftMask,             XK_r,              self_restart,   {0} },
+	{ MODKEY|ShiftMask,             XK_q,              quit,           {0} },
+
+	{0,      XK_Print, spawn, SHCMD("import -window root $HOME/Pictures/screenshot-$(date +%y-%m-%d-%H-%M-%S).png && notify-send 'Screenshot taken!'") },
+	{MODKEY, XK_Print, spawn, SHCMD("import $HOME/Pictures/screenshot-$(date +%y-%m-%d-%H-%M-%S).png && notify-send 'Screenshot taken!'") },
+    {0, XF86XK_AudioRaiseVolume,  spawn, SHCMD("pactl set-sink-volume @DEFAULT_SINK@   +5%    && notify-send -r 1 -t 2000 -i audio-volume-medium \"volume: $(pamixer --get-volume-human)\"") },
+    {0, XF86XK_AudioLowerVolume,  spawn, SHCMD("pactl set-sink-volume @DEFAULT_SINK@   -5%    && notify-send -r 1 -t 2000 -i audio-volume-medium \"volume: $(pamixer --get-volume-human)\"") },
+    {0, XF86XK_AudioMute,         spawn, SHCMD("pactl set-sink-mute   @DEFAULT_SINK@   toggle && notify-send -r 1 -t 2000 -i audio-volume-medium \"volume: $(pamixer --get-volume-human)\"") },
+    {0, XF86XK_AudioMicMute,      spawn, SHCMD("pactl set-source-mute @DEFAULT_SOURCE@ toggle && notify-send -r 1 -t 2000 -i audio-volume-medium \"volume: $(pamixer --get-volume-human)\"") },
+	{0, XF86XK_AudioPrev,         spawn, {.v = (char*[]){ "playerctl", "prev", NULL } } },
+	{0, XF86XK_AudioNext,         spawn, {.v = (char*[]){ "playerctl", "next", NULL } } },
+	{0, XF86XK_AudioPause,        spawn, {.v = (char*[]){ "playerctl", "play-pause", NULL } } },
+	{0, XF86XK_AudioPlay,         spawn, {.v = (char*[]){ "playerctl", "play-pause", NULL } } },
+	{0, XF86XK_AudioStop,         spawn, {.v = (char*[]){ "playerctl", "stop", NULL } } },
+	{0, XF86XK_MonBrightnessUp,   spawn, {.v = (char*[]){ "xbacklight", "-inc", "15", NULL } } },
+	{0, XF86XK_MonBrightnessDown, spawn, {.v = (char*[]){ "xbacklight", "-dec", "15", NULL } } },
 };
 
 /* button definitions */
