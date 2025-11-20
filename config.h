@@ -4,7 +4,8 @@
 #include <X11/XF86keysym.h>
 
 /* appearance */
-static const unsigned int borderpx  = 1;        /* border pixel of windows */
+static const unsigned int borderpx  = 2;        /* border pixel of windows */
+static const unsigned int gappx     = 18;       /* gap pixel between windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
@@ -88,8 +89,7 @@ static const Key keys[] = {
 	TAGKEYS(                        XK_7,                              6)
 	TAGKEYS(                        XK_8,                              7)
 	TAGKEYS(                        XK_9,                              8)
-	{ MODKEY,                       XK_p,              spawn,          {.v = dmenucmd } },
-	{ MODKEY|ShiftMask,             XK_Return,         spawn,          {.v = termcmd } },
+	{ MODKEY,                       XK_x,              spawn,          {.v = dmenucmd } },
 	{ MODKEY,                       XK_t,              spawn,          {.v = termcmd } },
 	{ MODKEY,                       XK_a,              spawn,          {.v = (char*[]){ "rofi", "-show", "drun", NULL } } },
     { MODKEY,                       XK_r,              spawn,          {.v = (char*[]){ "st", "-e", "ranger", NULL } } },
@@ -100,7 +100,7 @@ static const Key keys[] = {
 	{ MODKEY,                       XK_p,              incnmaster,     {.i = -1 } },
 	{ MODKEY,                       XK_h,              setmfact,       {.f = -0.05} },
 	{ MODKEY,                       XK_l,              setmfact,       {.f = +0.05} },
-	{ MODKEY,                       XK_Return,         zoom,           {0} },
+	{ MODKEY,                       XK_s,              zoom,           {0} },
 	{ MODKEY,                       XK_Tab,            view,           {0} },
 	{ MODKEY,                       XK_d,              killclient,     {0} },
 	{ MODKEY,                       XK_f,              setlayout,      {0} },
