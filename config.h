@@ -5,7 +5,6 @@
 
 /* appearance */
 static const unsigned int borderpx  = 1;        /* border pixel of windows */
-static const unsigned int gappx     = 0;       /* gap pixel between windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 0;        /* 0 means bottom bar */
@@ -19,7 +18,8 @@ static const char col_gray2[]       = "#444444";
 static const char col_gray3[]       = "#bbbbbb";
 static const char col_gray4[]       = "#eeeeee";
 static const char col_cyan[]        = "#004466";
-static char selbordercolor[]        = "#880000";
+// static char selbordercolor[]        = "#4488aa";
+static char selbordercolor[]        = "#99BBDD";
 
 static const char *colors[][3]      = {
     /*               fg         bg         border   */
