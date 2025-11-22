@@ -1,6 +1,8 @@
 /* See LICENSE file for copyright and license details. */
 
 #include "extra.h"
+#include "movestack.c"
+
 #include <X11/XF86keysym.h>
 
 /*  Display modes of the tab bar: never shown, always shown, shown only in  */
@@ -100,16 +102,24 @@ static const Key keys[] = {
     TAGKEYS(                        XK_7,                              6)
     TAGKEYS(                        XK_8,                              7)
     TAGKEYS(                        XK_9,                              8)
+    { MODKEY|ShiftMask,             XK_x,              spawn,          CMD("rofi", "-show", "run") },
     { MODKEY,                       XK_x,              spawn,          {.v = dmenucmd } },
     { MODKEY,                       XK_t,              spawn,          {.v = termcmd } },
     { MODKEY,                       XK_a,              spawn,          CMD("rofi", "-show", "drun") },
     { MODKEY,                       XK_r,              spawn,          CMD("st", "-e", "ranger") },
     { MODKEY|ShiftMask,             XK_b,              spawn,          CMD("nitrogen", "--random", "--set-zoom-fill", "--save") },
+    { MODKEY|ShiftMask,             XK_b,              spawn,          CMD("nitrogen", "--random", "--set-zoom-fill", "--save") },
+    { Mod1Mask|ShiftMask,           XK_v,              spawn,          CMD("xfce4-popup-clipman") },
     { MODKEY|ShiftMask,             XK_p,              spawn,          SHCMD("source ~/.xprofile") },
+    { MODKEY|ShiftMask,             XK_d,              spawn,          CMD("xkill") },
+    { MODKEY,                       XK_backslash,      spawn,          CMD("dmenu-emoji", "!") },
+    { MODKEY|ShiftMask,             XK_backslash,      spawn,          CMD("dmenu-emoji") },
     { MODKEY,                       XK_w,              tabmode,        {-1} },
     { MODKEY,                       XK_b,              togglebar,      {0} },
     { MODKEY,                       XK_j,              focusstack,     {.i = +1 } },
     { MODKEY,                       XK_k,              focusstack,     {.i = -1 } },
+    { MODKEY|ShiftMask,             XK_j,              movestack,      {.i = +1 } },
+    { MODKEY|ShiftMask,             XK_k,              movestack,      {.i = -1 } },
     { MODKEY,                       XK_n,              incnmaster,     {.i = +1 } },
     { MODKEY,                       XK_p,              incnmaster,     {.i = -1 } },
     { MODKEY,                       XK_h,              setmfact,       {.f = -0.03} },
@@ -118,26 +128,26 @@ static const Key keys[] = {
     { MODKEY,                       XK_Tab,            view,           {0} },
     { MODKEY,                       XK_d,              killclient,     {0} },
     { MODKEY,                       XK_m,              setlayout,      {0} },
-    { MODKEY,                       XK_f,              togglefullscr, {0} },
+    { MODKEY,                       XK_f,              togglefullscr,  {0} },
     { MODKEY|ShiftMask,             XK_f,              togglefloating, {0} },
     { MODKEY,                       XK_bracketright,   nextlayout,     {.i = +1} },
     { MODKEY,                       XK_bracketleft,    nextlayout,     {.i = -1} },
     { MODKEY|ShiftMask,             XK_r,              self_restart,   {0} },
     { MODKEY|ShiftMask,             XK_q,              quit,           {0} },
 
-    {0,      XK_Print, spawn, SHCMD("import -window root $HOME/Pictures/screenshot-$(date +%y-%m-%d-%H-%M-%S).png && notify-send 'Screenshot taken!'") },
-    {MODKEY, XK_Print, spawn, SHCMD("import $HOME/Pictures/screenshot-$(date +%y-%m-%d-%H-%M-%S).png && notify-send 'Screenshot taken!'") },
+    {0,      XK_Print,            spawn, SHCMD("import -window root $HOME/Pictures/screenshot-$(date +%y-%m-%d-%H-%M-%S).png && notify-send 'Screenshot taken!'") },
+    {MODKEY, XK_Print,            spawn, SHCMD("import $HOME/Pictures/screenshot-$(date +%y-%m-%d-%H-%M-%S).png && notify-send 'Screenshot taken!'") },
     {0, XF86XK_AudioRaiseVolume,  spawn, SHCMD("pactl set-sink-volume @DEFAULT_SINK@   +5%    && notify-send -r 1 -t 2000 -i audio-volume-medium \"volume: $(pamixer --get-volume-human)\"") },
     {0, XF86XK_AudioLowerVolume,  spawn, SHCMD("pactl set-sink-volume @DEFAULT_SINK@   -5%    && notify-send -r 1 -t 2000 -i audio-volume-medium \"volume: $(pamixer --get-volume-human)\"") },
     {0, XF86XK_AudioMute,         spawn, SHCMD("pactl set-sink-mute   @DEFAULT_SINK@   toggle && notify-send -r 1 -t 2000 -i audio-volume-medium \"volume: $(pamixer --get-volume-human)\"") },
     {0, XF86XK_AudioMicMute,      spawn, SHCMD("pactl set-source-mute @DEFAULT_SOURCE@ toggle && notify-send -r 1 -t 2000 -i audio-volume-medium \"volume: $(pamixer --get-volume-human)\"") },
-    {0, XF86XK_AudioPrev,         spawn, {.v = (char*[]){ "playerctl", "prev", NULL } } },
-    {0, XF86XK_AudioNext,         spawn, {.v = (char*[]){ "playerctl", "next", NULL } } },
-    {0, XF86XK_AudioPause,        spawn, {.v = (char*[]){ "playerctl", "play-pause", NULL } } },
-    {0, XF86XK_AudioPlay,         spawn, {.v = (char*[]){ "playerctl", "play-pause", NULL } } },
-    {0, XF86XK_AudioStop,         spawn, {.v = (char*[]){ "playerctl", "stop", NULL } } },
-    {0, XF86XK_MonBrightnessUp,   spawn, {.v = (char*[]){ "xbacklight", "-inc", "15", NULL } } },
-    {0, XF86XK_MonBrightnessDown, spawn, {.v = (char*[]){ "xbacklight", "-dec", "15", NULL } } },
+    {0, XF86XK_AudioPrev,         spawn, CMD("playerctl", "prev") },
+    {0, XF86XK_AudioNext,         spawn, CMD("playerctl", "next") },
+    {0, XF86XK_AudioPause,        spawn, CMD("playerctl", "play-pause") },
+    {0, XF86XK_AudioPlay,         spawn, CMD("playerctl", "play-pause") },
+    {0, XF86XK_AudioStop,         spawn, CMD("playerctl", "stop") },
+    {0, XF86XK_MonBrightnessUp,   spawn, CMD("xbacklight", "-inc", "15") },
+    {0, XF86XK_MonBrightnessDown, spawn, CMD("xbacklight", "-dec", "15") },
 };
 
 /* button definitions */
