@@ -13,6 +13,7 @@ static const int showtab            = showtab_auto;        /* Default tab bar sh
 static const int toptab             = True;               /* False means bottom tab bar */
 
 /* appearance */
+static unsigned int gappx           = 18;       /* gap pixel between windows */
 static const unsigned int borderpx  = 1;        /* border pixel of windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
@@ -114,6 +115,9 @@ static const Key keys[] = {
     { MODKEY|ShiftMask,             XK_d,              spawn,          CMD("xkill") },
     { MODKEY,                       XK_backslash,      spawn,          CMD("dmenu-emoji", "!") },
     { MODKEY|ShiftMask,             XK_backslash,      spawn,          CMD("dmenu-emoji") },
+    { MODKEY,                       XK_slash,          setgap,         {0} },
+    { Mod1Mask,                     XK_slash,          setgap,         {.i = +1} },
+    { Mod1Mask|ShiftMask,           XK_slash,          setgap,         {.i = -1} },
     { MODKEY,                       XK_w,              tabmode,        {-1} },
     { MODKEY,                       XK_b,              togglebar,      {0} },
     { MODKEY,                       XK_j,              focusstack,     {.i = +1 } },
