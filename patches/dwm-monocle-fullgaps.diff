@@ -1,0 +1,12 @@
+diff -up Original/dwm.c Original_monocle_gaps/dwm.c
+--- Original/dwm.c	2024-03-19 08:24:52.000000000 -0300
++++ Original_monocle_gaps/dwm.c	2025-04-20 10:08:40.906622682 -0300
+@@ -1122,7 +1122,7 @@ monocle(Monitor *m)
+ 	if (n > 0) /* override layout symbol */
+ 		snprintf(m->ltsymbol, sizeof m->ltsymbol, "[%d]", n);
+ 	for (c = nexttiled(m->clients); c; c = nexttiled(c->next))
+-		resize(c, m->wx, m->wy, m->ww - 2 * c->bw, m->wh - 2 * c->bw, 0);
++		resize(c, m->wx + m->gappx, m->wy + m->gappx, m->ww - 2 * c->bw - m->gappx * 2, m->wh - 2 * c->bw - m->gappx * 2, 0); 
+ }
+ 
+ void

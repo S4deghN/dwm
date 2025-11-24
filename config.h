@@ -14,6 +14,7 @@ static const int toptab             = True;               /* False means bottom 
 
 /* appearance */
 static const unsigned int borderpx  = 1;        /* border pixel of windows */
+static const Gap default_gap        = {.isgap = 1, .realgap = 10, .gappx = 15};
 static const unsigned int snap      = 32;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 0;        /* 0 means bottom bar */
@@ -114,6 +115,9 @@ static const Key keys[] = {
     { MODKEY|ShiftMask,             XK_d,              spawn,          CMD("xkill") },
     { MODKEY,                       XK_backslash,      spawn,          CMD("dmenu-emoji", "!") },
     { MODKEY|ShiftMask,             XK_backslash,      spawn,          CMD("dmenu-emoji") },
+    { MODKEY,                       XK_slash,          setgaps,        {.i = GAP_TOGGLE} },
+    { Mod1Mask,                     XK_slash,          setgaps,        {.i = +5} },
+    { Mod1Mask|ShiftMask,           XK_slash,          setgaps,        {.i = -5} },
     { MODKEY,                       XK_w,              tabmode,        {-1} },
     { MODKEY,                       XK_b,              togglebar,      {0} },
     { MODKEY,                       XK_j,              focusstack,     {.i = +1 } },
