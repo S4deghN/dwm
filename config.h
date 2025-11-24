@@ -117,7 +117,7 @@ static const Key keys[] = {
     { MODKEY,                       XK_r,              spawn,          CMD("st", "-e", "ranger") },
     { MODKEY|ShiftMask,             XK_b,              spawn,          CMD("nitrogen", "--random", "--set-zoom-fill", "--save") },
     { MODKEY|ShiftMask,             XK_b,              spawn,          CMD("nitrogen", "--random", "--set-zoom-fill", "--save") },
-    { Mod1Mask|ShiftMask,           XK_v,              spawn,          CMD("xfce4-popup-clipman") },
+    // { Mod1Mask|ShiftMask,           XK_v,              spawn,          CMD("xfce4-popup-clipman") }, // qlipper
     { MODKEY|ShiftMask,             XK_p,              spawn,          SHCMD("source ~/.xprofile") },
     { MODKEY|ShiftMask,             XK_d,              spawn,          CMD("xkill") },
     { MODKEY,                       XK_backslash,      spawn,          CMD("dmenu-emoji", "!") },
