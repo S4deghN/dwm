@@ -13,28 +13,28 @@ static const int showtab            = showtab_auto;        /* Default tab bar sh
 static const int toptab             = True;               /* False means bottom tab bar */
 
 /* appearance */
-static const unsigned int borderpx  = 1;        /* border pixel of windows */
-static const Gap default_gap        = {.isgap = 1, .realgap = 10, .gappx = 15};
-static const unsigned int snap      = 32;       /* snap pixel */
-static const unsigned int systraypinning = 0;   /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor X */
-static const unsigned int systrayonleft = 0;    /* 0: systray in the right corner, >0: systray on left of status text */
-static const unsigned int systrayspacing = 2;   /* systray spacing */
-static const int systraypinningfailfirst = 1;   /* 1: if pinning fails, display systray on the first monitor, False: display systray on the last monitor*/
-static const int showsystray        = 1;        /* 0 means no systray */
-static const int showbar            = 1;        /* 0 means no bar */
-static const int topbar             = 0;        /* 0 means bottom bar */
-static const char *fonts[]          = {
+static const unsigned int borderpx       = 1;        /* border pixel of windows */
+static const Gap default_gap             = {.isgap = 1, .realgap = 10, .gappx = 15};
+static const unsigned int snap           = 32;       /* snap pixel */
+static const unsigned int systraypinning = 0;        /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor X */
+static const unsigned int systrayonleft  = 0;        /* 0: systray in the right corner, >0: systray on left of status text */
+static const unsigned int systrayspacing = 2;        /* systray spacing */
+static const int systraypinningfailfirst = 1;        /* 1: if pinning fails, display systray on the first monitor, False: display systray on the last monitor*/
+static const int showsystray             = 1;        /* 0 means no systray */
+static const int showbar                 = 1;        /* 0 means no bar */
+static const int topbar                  = 0;        /* 0 means bottom bar */
+static const char *fonts[]               = {
     "SF Mono:size=10",
     "NotoColorEmoji:size=11"
 };
-static const char dmenufont[]       = "monospace:size=10";
-static const char col_gray1[]       = "#222222";
-static const char col_gray2[]       = "#444444";
-static const char col_gray3[]       = "#bbbbbb";
-static const char col_gray4[]       = "#eeeeee";
-static const char col_cyan[]        = "#004466";
-// static char selbordercolor[]        = "#4488aa";
-static char selbordercolor[]        = "#99BBDD";
+static const char dmenufont[] = "monospace:size=10";
+static const char col_gray1[] = "#222222";
+static const char col_gray2[] = "#444444";
+static const char col_gray3[] = "#bbbbbb";
+static const char col_gray4[] = "#eeeeee";
+static const char col_cyan[]  = "#004466";
+// static char selbordercolor[]  = "#4488aa";
+static char selbordercolor[]  = "#99BBDD";
 
 static const char *colors[][3]      = {
     /*               fg         bg         border   */
@@ -115,18 +115,18 @@ static const Key keys[] = {
     { MODKEY,                       XK_t,              spawn,          {.v = termcmd } },
     { MODKEY,                       XK_a,              spawn,          CMD("rofi", "-show", "drun") },
     { MODKEY,                       XK_r,              spawn,          CMD("st", "-e", "ranger") },
-    { MODKEY|ShiftMask,             XK_b,              spawn,          CMD("nitrogen", "--random", "--set-zoom-fill", "--save") },
+    { MODKEY,                       XK_b,              spawn,          CMD("pcmanfm") },
     { MODKEY|ShiftMask,             XK_b,              spawn,          CMD("nitrogen", "--random", "--set-zoom-fill", "--save") },
     // { Mod1Mask|ShiftMask,           XK_v,              spawn,          CMD("xfce4-popup-clipman") }, // qlipper
     { MODKEY|ShiftMask,             XK_p,              spawn,          SHCMD("source ~/.xprofile") },
     { MODKEY|ShiftMask,             XK_d,              spawn,          CMD("xkill") },
     { MODKEY,                       XK_backslash,      spawn,          CMD("dmenu-emoji", "!") },
     { MODKEY|ShiftMask,             XK_backslash,      spawn,          CMD("dmenu-emoji") },
+    { MODKEY|ControlMask,           XK_b,              togglebar,      {0} },
     { MODKEY,                       XK_slash,          setgaps,        {.i = GAP_TOGGLE} },
     { Mod1Mask,                     XK_slash,          setgaps,        {.i = +5} },
     { Mod1Mask|ShiftMask,           XK_slash,          setgaps,        {.i = -5} },
     { MODKEY,                       XK_w,              tabmode,        {-1} },
-    { MODKEY,                       XK_b,              togglebar,      {0} },
     { MODKEY,                       XK_j,              focusstack,     {.i = +1 } },
     { MODKEY,                       XK_k,              focusstack,     {.i = -1 } },
     { MODKEY|ShiftMask,             XK_j,              movestack,      {.i = +1 } },
