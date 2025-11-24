@@ -1049,7 +1049,7 @@ drawtab(Monitor *m) {
 	m->ntabs = 0;
 	for(c = m->clients; c; c = c->next){
 	  if(!ISVISIBLE(c)) continue;
-	  m->tab_widths[m->ntabs] = TEXTW(c->name);
+	  m->tab_widths[m->ntabs] = TEXTW(c->name) + TEXTW("[]");
 	  tot_width += m->tab_widths[m->ntabs];
 	  ++m->ntabs;
 	  if(m->ntabs >= MAXTABS) break;
@@ -1075,7 +1075,14 @@ drawtab(Monitor *m) {
 	  if(m->tab_widths[i] >  maxsize) m->tab_widths[i] = maxsize;
 	  w = m->tab_widths[i];
 	  drw_setscheme(drw, scheme[(c == m->sel) ? SchemeSel : SchemeNorm]);
-	  drw_text(drw, x, 0, w, th, 0, c->name, 0);
+
+      char *name = alloca(strlen(c->name) + 6);
+      char* p = name;
+      p = stpcpy(p, " [ ");
+      p = stpcpy(p, c->name);
+      p = stpcpy(p, " ]");
+
+	  drw_text(drw, x, 0, w, th, 0, name, 0);
 	  x += w;
 	  ++i;
 	}
