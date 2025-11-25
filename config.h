@@ -37,6 +37,7 @@ static const Layout layouts[] = {
     { "[]=",  tile },    /* first entry is default */
     { "[M]",  monocle },
     { "><>",  NULL },    /* no layout function means floating behavior */
+	{ "[D]",  deck },
 };
 
 static const char dmenufont[] = "monospace:size=10";
@@ -170,6 +171,7 @@ static const Key keys[] = {
     { Mod,      XK_Tab,          view,           {0} },
     { Mod,      XK_d,            killclient,     {0} },
     { Mod,      XK_m,            setlayout,      {0} },
+    { Mod,      XK_v,            setlayout,      {.v = &layouts[3]} },
     { Mod,      XK_f,            togglefullscr,  {0} },
     { ShiftMod, XK_f,            togglefloating, {0} },
     { Mod,      XK_bracketright, nextlayout,     {.i = +1} },
