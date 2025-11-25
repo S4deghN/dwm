@@ -37,7 +37,7 @@ static const Layout layouts[] = {
     { "[]=",  tile },    /* first entry is default */
     { "[M]",  monocle },
     { "><>",  NULL },    /* no layout function means floating behavior */
-	{ "[D]",  deck },
+    { "[D]",  deck },
 };
 
 static const char dmenufont[] = "monospace:size=10";
@@ -179,12 +179,17 @@ static const Key keys[] = {
     { ShiftMod, XK_r,            self_restart,   {0} },
     { ShiftMod, XK_q,            quit,           {0} },
 
-    {0,   XK_Print, spawn, SHCMD("import -window root $HOME/Pictures/screenshot-$(date +%y-%m-%d-%H-%M-%S).png && notify-send 'Screenshot taken!'") },
-    {Mod, XK_Print, spawn, SHCMD("import $HOME/Pictures/screenshot-$(date +%y-%m-%d-%H-%M-%S).png && notify-send 'Screenshot taken!'") },
-    {0, XF86XK_AudioRaiseVolume,  spawn, SHCMD("pactl set-sink-volume @DEFAULT_SINK@   +5%    && notify-send -r 1 -t 2000 -i audio-volume-medium \"volume: $(pamixer --get-volume-human)\"") },
-    {0, XF86XK_AudioLowerVolume,  spawn, SHCMD("pactl set-sink-volume @DEFAULT_SINK@   -5%    && notify-send -r 1 -t 2000 -i audio-volume-medium \"volume: $(pamixer --get-volume-human)\"") },
-    {0, XF86XK_AudioMute,         spawn, SHCMD("pactl set-sink-mute   @DEFAULT_SINK@   toggle && notify-send -r 1 -t 2000 -i audio-volume-medium \"volume: $(pamixer --get-volume-human)\"") },
-    {0, XF86XK_AudioMicMute,      spawn, SHCMD("pactl set-source-mute @DEFAULT_SOURCE@ toggle && notify-send -r 1 -t 2000 -i audio-volume-medium \"volume: $(pamixer --get-volume-human)\"") },
+#define screenshot_path "$HOME/Pictures/screenshot-$(date +%y-%m-%d-%H-%M-%S).png"
+#define notif "notify-send 'Screenshot taken!'"
+    {0,   XK_Print, spawn, SHCMD("import -window root " screenshot_path " && " notif) },
+    {Mod, XK_Print, spawn, SHCMD("import " screenshot_path " && " notif) },
+#undef notif
+#define notif "notify-send -r 1 -t 2000 -i audio-volume-medium "
+    {0, XF86XK_AudioRaiseVolume,  spawn, SHCMD(notif"\"volume: $(pamixer --allow-boost --increase 5 --get-volume-human)\"") },
+    {0, XF86XK_AudioLowerVolume,  spawn, SHCMD(notif"\"volume: $(pamixer --allow-boost --decrease 5 --get-volume-human)\"") },
+    {0, XF86XK_AudioMute,         spawn, SHCMD(notif"\"volume: $(pamixer --toggle-mute  --get-volume-human)\"") },
+    {0, XF86XK_AudioMicMute,      spawn, SHCMD(notif"\"mic: $(pactl set-source-mute @DEFAULT_SOURCE@ toggle && pactl get-source-mute @DEFAULT_SOURCE@)\"") },
+#undef notif
     {0, XF86XK_AudioPrev,         spawn, CMD("playerctl", "prev") },
     {0, XF86XK_AudioNext,         spawn, CMD("playerctl", "next") },
     {0, XF86XK_AudioPause,        spawn, CMD("playerctl", "play-pause") },
