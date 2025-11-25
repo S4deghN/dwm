@@ -5,6 +5,8 @@
 
 #include <X11/XF86keysym.h>
 
+#define STATUSBAR "dwm-status"
+
 /*  Display modes of the tab bar: never shown, always shown, shown only in  */
 /*  monocle mode in the presence of several windows.                        */
 /*  Modes after showtab_nmodes are disabled.                                */
@@ -27,6 +29,19 @@ static const char *fonts[]               = {
     "SF Mono:size=10",
     "NotoColorEmoji:size=11"
 };
+/* layout(s) */
+static const float mfact     = 0.5;  /* factor of master area size [0.05..0.95] */
+static const int nmaster     = 1;    /* number of clients in master area */
+static const int resizehints = 0;    /* 1 means respect size hints in tiled resizals */
+static const int lockfullscreen = 1; /* 1 will force focus on the fullscreen window */
+
+static const Layout layouts[] = {
+    /* symbol arrange function */
+    { "[]=",  tile },    /* first entry is default */
+    { "[M]",  monocle },
+    { "><>",  NULL },    /* no layout function means floating behavior */
+};
+
 static const char dmenufont[] = "monospace:size=10";
 static const char col_gray1[] = "#222222";
 static const char col_gray2[] = "#444444";
@@ -42,112 +57,133 @@ static const char *colors[][3]      = {
     [SchemeSel]  = { col_gray4, col_cyan,  selbordercolor  },
 };
 
+#define VASTR(...) ((const char*[]){__VA_ARGS__, NULL})
+#define CMD(...)   { .v = VASTR( __VA_ARGS__) }
+#define SHCMD(cmd) { .v = VASTR("/bin/sh", "-c", cmd) }
+
+#define MODS \
+    MOD(Mod, Mod4Mask) \
+    MOD(Alt, Mod1Mask)
+
+enum {
+#define MOD(name, mod)                 \
+    name            = mod,             \
+    Shift##name     = mod|ShiftMask,   \
+    Ctrl##name      = mod|ControlMask, \
+    CtrlShift##name = mod|ShiftMask|ControlMask,
+    MODS
+#undef MOD
+};
+
 /* tagging */
 static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+#define TAGKEYS \
+    TAGKEY(XK_1, 0) \
+    TAGKEY(XK_2, 1) \
+    TAGKEY(XK_3, 2) \
+    TAGKEY(XK_4, 3) \
+    TAGKEY(XK_5, 4) \
+    TAGKEY(XK_6, 5) \
+    TAGKEY(XK_7, 6) \
+    TAGKEY(XK_8, 7) \
+    TAGKEY(XK_9, 8) \
+
+#define SCRATCHPADS \
+    SP(0, Mod, XK_g, 2, "log", VASTR("st", "-n", "log", "-e", "log")) \
+    SP(1, Mod, XK_c, 1, "calc", VASTR("mate-calc")) \
+    SP(2, Mod, XK_i, 1, "gpick", VASTR("gpick")) \
+
+typedef struct {
+    const char *name;
+    const void *cmd;
+} Sp;
+static Sp scratchpads[] = {
+    /* name, cmd  */
+#define SP(tagnum, mod, key, isfloating, name, cmd) \
+    {name, cmd},
+    SCRATCHPADS
+#undef SP
+};
 
 static const Rule rules[] = {
     /* xprop(1):
      *  WM_CLASS(STRING) = instance, class
      *  WM_NAME(STRING) = title
+     *  isfloatng: 0: noflaot, 1: float, 2: float and center
      */
     /* class              instance    title       tags mask     isfloating   monitor */
-    { "Gpick",            NULL,       NULL,       0,            1,           -1 },
     { "Nitroge",          NULL,       NULL,       0,            1,           -1 },
     { "Blueman-manager",  NULL,       NULL,       0,            1,           -1 },
     { "Pavucontrol",      NULL,       NULL,       0,            1,           -1 },
     { "Gnome-calculator", NULL,       NULL,       0,            1,           -1 },
     { "VirtualBox",       NULL,       NULL,       0,            1,           -1 },
     { "Firefox",          NULL,       NULL,       1 << 8,       0,           -1 },
+#define SP(tagnum, mod, key, isfloating, name, cmd) \
+    { NULL, name, NULL, SPTAG(tagnum), isfloating, -1 },
+    SCRATCHPADS
+#undef SP
 };
-
-/* layout(s) */
-static const float mfact     = 0.5;  /* factor of master area size [0.05..0.95] */
-static const int nmaster     = 1;    /* number of clients in master area */
-static const int resizehints = 0;    /* 1 means respect size hints in tiled resizals */
-static const int lockfullscreen = 1; /* 1 will force focus on the fullscreen window */
-
-static const Layout layouts[] = {
-    /* symbol     arrange function */
-    { "[]=",      tile },    /* first entry is default */
-    { "[M]",      monocle },
-    { "><>",      NULL },    /* no layout function means floating behavior */
-};
-
-/* key definitions */
-#define MODKEY Mod4Mask
-#define TAGKEYS(KEY,TAG) \
-    { MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
-    { MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
-    { MODKEY|ShiftMask,             KEY,      tag,            {.ui = 1 << TAG} }, \
-    { MODKEY|ControlMask|ShiftMask, KEY,      toggletag,      {.ui = 1 << TAG} },
-
-/* helper for spawning shell commands in the pre dwm-5.0 fashion */
-#define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
-#define CMD(...) { .v = (const char*[]){ __VA_ARGS__, NULL } }
-
-#define STATUSBAR "dwm-status"
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
-static const char *termcmd[]  = { "st", NULL };
-// static const char *roficmd[]  = ;
 
 static const Key keys[] = {
     /* modifier                     key                function        argument */
-    { MODKEY,                       XK_0,              view,           {.ui = ~0 } },
-    { MODKEY|ShiftMask,             XK_0,              tag,            {.ui = ~0 } },
-    { MODKEY,                       XK_comma,          focusmon,       {.i = -1 } },
-    { MODKEY,                       XK_period,         focusmon,       {.i = +1 } },
-    { MODKEY|ShiftMask,             XK_comma,          tagmon,         {.i = -1 } },
-    { MODKEY|ShiftMask,             XK_period,         tagmon,         {.i = +1 } },
-    TAGKEYS(                        XK_1,                              0)
-    TAGKEYS(                        XK_2,                              1)
-    TAGKEYS(                        XK_3,                              2)
-    TAGKEYS(                        XK_4,                              3)
-    TAGKEYS(                        XK_5,                              4)
-    TAGKEYS(                        XK_6,                              5)
-    TAGKEYS(                        XK_7,                              6)
-    TAGKEYS(                        XK_8,                              7)
-    TAGKEYS(                        XK_9,                              8)
-    { MODKEY|ShiftMask,             XK_x,              spawn,          CMD("rofi", "-show", "run") },
-    { MODKEY,                       XK_x,              spawn,          {.v = dmenucmd } },
-    { MODKEY,                       XK_t,              spawn,          {.v = termcmd } },
-    { MODKEY,                       XK_a,              spawn,          CMD("rofi", "-show", "drun") },
-    { MODKEY,                       XK_r,              spawn,          CMD("st", "-e", "ranger") },
-    { MODKEY,                       XK_b,              spawn,          CMD("pcmanfm") },
-    { MODKEY|ShiftMask,             XK_b,              spawn,          CMD("nitrogen", "--random", "--set-zoom-fill", "--save") },
-    // { Mod1Mask|ShiftMask,           XK_v,              spawn,          CMD("xfce4-popup-clipman") }, // qlipper
-    { MODKEY|ShiftMask,             XK_p,              spawn,          SHCMD("source ~/.xprofile") },
-    { MODKEY|ShiftMask,             XK_d,              spawn,          CMD("xkill") },
-    { MODKEY,                       XK_backslash,      spawn,          CMD("dmenu-emoji", "!") },
-    { MODKEY|ShiftMask,             XK_backslash,      spawn,          CMD("dmenu-emoji") },
-    { MODKEY|ControlMask,           XK_b,              togglebar,      {0} },
-    { MODKEY,                       XK_slash,          setgaps,        {.i = GAP_TOGGLE} },
-    { Mod1Mask,                     XK_slash,          setgaps,        {.i = +5} },
-    { Mod1Mask|ShiftMask,           XK_slash,          setgaps,        {.i = -5} },
-    { MODKEY,                       XK_w,              tabmode,        {-1} },
-    { MODKEY,                       XK_j,              focusstack,     {.i = +1 } },
-    { MODKEY,                       XK_k,              focusstack,     {.i = -1 } },
-    { MODKEY|ShiftMask,             XK_j,              movestack,      {.i = +1 } },
-    { MODKEY|ShiftMask,             XK_k,              movestack,      {.i = -1 } },
-    { MODKEY,                       XK_p,              incnmaster,     {.i = -1 } },
-    { MODKEY,                       XK_n,              incnmaster,     {.i = +1 } },
-    { MODKEY,                       XK_h,              setmfact,       {.f = -0.03} },
-    { MODKEY,                       XK_l,              setmfact,       {.f = +0.03} },
-    { MODKEY,                       XK_s,              zoom,           {0} },
-    { MODKEY,                       XK_Tab,            view,           {0} },
-    { MODKEY,                       XK_d,              killclient,     {0} },
-    { MODKEY,                       XK_m,              setlayout,      {0} },
-    { MODKEY,                       XK_f,              togglefullscr,  {0} },
-    { MODKEY|ShiftMask,             XK_f,              togglefloating, {0} },
-    { MODKEY,                       XK_bracketright,   nextlayout,     {.i = +1} },
-    { MODKEY,                       XK_bracketleft,    nextlayout,     {.i = -1} },
-    { MODKEY|ShiftMask,             XK_r,              self_restart,   {0} },
-    { MODKEY|ShiftMask,             XK_q,              quit,           {0} },
+#define SP(tagnum, mod, key, isfloating, name, cmd) \
+    {mod, key, togglescratch, {.ui = tagnum }},
+    SCRATCHPADS
+#undef SP
+#define TAGKEY(key, tagnum) \
+    { Mod,          key, view,       {.ui = 1 << tagnum} }, \
+    { CtrlMod,      key, toggleview, {.ui = 1 << tagnum} }, \
+    { ShiftMod,     key, tag,        {.ui = 1 << tagnum} }, \
+    { CtrlShiftMod, key, toggletag,  {.ui = 1 << tagnum} },
+    TAGKEYS
+#undef TAGKEY
+    { Mod,      XK_0,            view,           {.ui = ~0 } },
+    { ShiftMod, XK_0,            tag,            {.ui = ~0 } },
+    { Mod,      XK_comma,        focusmon,       {.i = -1 } },
+    { Mod,      XK_period,       focusmon,       {.i = +1 } },
+    { ShiftMod, XK_comma,        tagmon,         {.i = -1 } },
+    { ShiftMod, XK_period,       tagmon,         {.i = +1 } },
+    { ShiftMod, XK_x,            spawn,          CMD("rofi", "-show", "run") },
+    { Mod,      XK_x,            spawn,          {.v = dmenucmd } },
+    { Mod,      XK_t,            spawn,          CMD("st") },
+    { Mod,      XK_a,            spawn,          CMD("rofi", "-show", "drun") },
+    { Mod,      XK_r,            spawn,          CMD("st", "-e", "ranger") },
+    { Mod,      XK_b,            spawn,          CMD("pcmanfm") },
+    { ShiftMod, XK_b,            spawn,          CMD("nitrogen", "--random", "--set-zoom-fill", "--save") },
+    { ShiftMod, XK_p,            spawn,          SHCMD("source ~/.xprofile") },
+    { ShiftMod, XK_d,            spawn,          CMD("xkill") },
+    { Mod,      XK_backslash,    spawn,          CMD("dmenu-emoji", "!") },
+    { ShiftMod, XK_backslash,    spawn,          CMD("dmenu-emoji") },
+    { CtrlMod,  XK_b,            togglebar,      {0} },
+    { Mod,      XK_slash,        setgaps,        {.i = GAP_TOGGLE} },
+    { Alt,      XK_slash,        setgaps,        {.i = +5} },
+    { ShiftAlt, XK_slash,        setgaps,        {.i = -5} },
+    { Mod,      XK_w,            tabmode,        {-1} },
+    { Mod,      XK_j,            focusstack,     {.i = +1 } },
+    { Mod,      XK_k,            focusstack,     {.i = -1 } },
+    { ShiftMod, XK_j,            movestack,      {.i = +1 } },
+    { ShiftMod, XK_k,            movestack,      {.i = -1 } },
+    { Mod,      XK_p,            incnmaster,     {.i = -1 } },
+    { Mod,      XK_n,            incnmaster,     {.i = +1 } },
+    { Mod,      XK_h,            setmfact,       {.f = -0.03} },
+    { Mod,      XK_l,            setmfact,       {.f = +0.03} },
+    { Mod,      XK_s,            zoom,           {0} },
+    { Mod,      XK_Tab,          view,           {0} },
+    { Mod,      XK_d,            killclient,     {0} },
+    { Mod,      XK_m,            setlayout,      {0} },
+    { Mod,      XK_f,            togglefullscr,  {0} },
+    { ShiftMod, XK_f,            togglefloating, {0} },
+    { Mod,      XK_bracketright, nextlayout,     {.i = +1} },
+    { Mod,      XK_bracketleft,  nextlayout,     {.i = -1} },
+    { ShiftMod, XK_r,            self_restart,   {0} },
+    { ShiftMod, XK_q,            quit,           {0} },
 
-    {0,      XK_Print,            spawn, SHCMD("import -window root $HOME/Pictures/screenshot-$(date +%y-%m-%d-%H-%M-%S).png && notify-send 'Screenshot taken!'") },
-    {MODKEY, XK_Print,            spawn, SHCMD("import $HOME/Pictures/screenshot-$(date +%y-%m-%d-%H-%M-%S).png && notify-send 'Screenshot taken!'") },
+    {0,   XK_Print, spawn, SHCMD("import -window root $HOME/Pictures/screenshot-$(date +%y-%m-%d-%H-%M-%S).png && notify-send 'Screenshot taken!'") },
+    {Mod, XK_Print, spawn, SHCMD("import $HOME/Pictures/screenshot-$(date +%y-%m-%d-%H-%M-%S).png && notify-send 'Screenshot taken!'") },
     {0, XF86XK_AudioRaiseVolume,  spawn, SHCMD("pactl set-sink-volume @DEFAULT_SINK@   +5%    && notify-send -r 1 -t 2000 -i audio-volume-medium \"volume: $(pamixer --get-volume-human)\"") },
     {0, XF86XK_AudioLowerVolume,  spawn, SHCMD("pactl set-sink-volume @DEFAULT_SINK@   -5%    && notify-send -r 1 -t 2000 -i audio-volume-medium \"volume: $(pamixer --get-volume-human)\"") },
     {0, XF86XK_AudioMute,         spawn, SHCMD("pactl set-sink-mute   @DEFAULT_SINK@   toggle && notify-send -r 1 -t 2000 -i audio-volume-medium \"volume: $(pamixer --get-volume-human)\"") },
@@ -164,22 +200,22 @@ static const Key keys[] = {
 /* button definitions */
 /* click can be ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle, ClkClientWin, or ClkRootWin */
 static const Button buttons[] = {
-    /* click                event mask      button          function        argument */
-    { ClkLtSymbol,          0,              Button1,        setlayout,      {0} },
-    { ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[2]} },
-    { ClkWinTitle,          0,              Button2,        zoom,           {0} },
-    { ClkStatusText,        0,              Button1,        sigstatusbar,   {.i = 1} },
-    { ClkStatusText,        0,              Button2,        sigstatusbar,   {.i = 2} },
-    { ClkStatusText,        0,              Button3,        sigstatusbar,   {.i = 3} },
-    { ClkStatusText,        0,              Button4,        sigstatusbar,   {.i = 4} },
-    { ClkStatusText,        0,              Button5,        sigstatusbar,   {.i = 5} },
-    { ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },
-    { ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
-    { ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
-    { ClkTagBar,            0,              Button1,        view,           {0} },
-    { ClkTagBar,            0,              Button3,        toggleview,     {0} },
-    { ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
-    { ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
-    { ClkTabBar,            0,              Button1,        focuswin,       {0} },
+    /* click + mask       button   function        argument */
+    { ClkLtSymbol,   0,   Button1, setlayout,      {0} },
+    { ClkLtSymbol,   0,   Button3, setlayout,      {.v = &layouts[2]} },
+    { ClkWinTitle,   0,   Button2, zoom,           {0} },
+    { ClkStatusText, 0,   Button1, sigstatusbar,   {.i = 1} },
+    { ClkStatusText, 0,   Button2, sigstatusbar,   {.i = 2} },
+    { ClkStatusText, 0,   Button3, sigstatusbar,   {.i = 3} },
+    { ClkStatusText, 0,   Button4, sigstatusbar,   {.i = 4} },
+    { ClkStatusText, 0,   Button5, sigstatusbar,   {.i = 5} },
+    { ClkClientWin,  Mod, Button1, movemouse,      {0} },
+    { ClkClientWin,  Mod, Button2, togglefloating, {0} },
+    { ClkClientWin,  Mod, Button3, resizemouse,    {0} },
+    { ClkTagBar,     0,   Button1, view,           {0} },
+    { ClkTagBar,     0,   Button3, toggleview,     {0} },
+    { ClkTagBar,     Mod, Button1, tag,            {0} },
+    { ClkTagBar,     Mod, Button3, toggletag,      {0} },
+    { ClkTabBar,     0,   Button1, focuswin,       {0} },
 };
 
