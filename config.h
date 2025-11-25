@@ -7,33 +7,30 @@
 
 #define STATUSBAR "dwm-status"
 
-/*  Display modes of the tab bar: never shown, always shown, shown only in  */
-/*  monocle mode in the presence of several windows.                        */
-/*  Modes after showtab_nmodes are disabled.                                */
+typedef unsigned int uint;
 enum showtab_modes { showtab_never, showtab_auto, showtab_nmodes, showtab_always};
-static const int showtab            = showtab_auto;        /* Default tab bar show mode */
-static const int toptab             = True;               /* False means bottom tab bar */
 
-/* appearance */
-static const unsigned int borderpx       = 2;        /* border pixel of windows */
-static const Gap default_gap             = {.isgap = 1, .realgap = 10, .gappx = 20};
-static const unsigned int snap           = 32;       /* snap pixel */
-static const unsigned int systraypinning = 0;        /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor X */
-static const unsigned int systrayonleft  = 0;        /* 0: systray in the right corner, >0: systray on left of status text */
-static const unsigned int systrayspacing = 2;        /* systray spacing */
-static const int systraypinningfailfirst = 1;        /* 1: if pinning fails, display systray on the first monitor, False: display systray on the last monitor*/
-static const int showsystray             = 1;        /* 0 means no systray */
-static const int showbar                 = 1;        /* 0 means no bar */
-static const int topbar                  = 0;        /* 0 means bottom bar */
-static const char *fonts[]               = {
+static const uint  borderpx                = 2;            /* border pixel of windows */
+static const uint  snap                    = 32;           /* snap pixel */
+static const int   showbar                 = 1;            /* 0 means no bar */
+static const int   topbar                  = 0;            /* 0 means bottom bar */
+static const float mfact                   = 0.5;          /* factor of master area size [0.05..0.95] */
+static const int   nmaster                 = 1;            /* number of clients in master area */
+static const int   resizehints             = 0;            /* 1 means respect size hints in tiled resizals */
+static const int   lockfullscreen          = 1;            /* 1 will force focus on the fullscreen window */
+static const int   showtab                 = showtab_auto; /* Default tab bar show mode */
+static const int   toptab                  = True;         /* False means bottom tab bar */
+static const Gap   default_gap             = {.isgap = 1, .realgap = 10, .gappx = 20};
+static const int   showsystray             = 1;            /* 0 means no systray */
+static const uint  systraypinning          = 0;            /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor X */
+static const uint  systrayonleft           = 0;            /* 0: systray in the right corner, >0: systray on left of status text */
+static const uint  systrayspacing          = 2;            /* systray spacing */
+static const int   systraypinningfailfirst = 1;            /* 1: if pinning fails, display systray on the first monitor, False: display systray on the last monitor*/
+
+static const char *fonts[] = {
     "SF Mono:size=10",
     "NotoColorEmoji:size=11"
 };
-/* layout(s) */
-static const float mfact     = 0.5;  /* factor of master area size [0.05..0.95] */
-static const int nmaster     = 1;    /* number of clients in master area */
-static const int resizehints = 0;    /* 1 means respect size hints in tiled resizals */
-static const int lockfullscreen = 1; /* 1 will force focus on the fullscreen window */
 
 static const Layout layouts[] = {
     /* symbol arrange function */
@@ -48,13 +45,11 @@ static const char col_gray2[] = "#444444";
 static const char col_gray3[] = "#bbbbbb";
 static const char col_gray4[] = "#eeeeee";
 static const char col_cyan[]  = "#004466";
-// static char selbordercolor[]  = "#4488aa";
-static char selbordercolor[]  = "#99BBDD";
-
-static const char *colors[][3]      = {
+static const char selborderclr[]  = "#99BBDD";
+static const char *colors[][3] = {
     /*               fg         bg         border   */
     [SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
-    [SchemeSel]  = { col_gray4, col_cyan,  selbordercolor  },
+    [SchemeSel]  = { col_gray4, col_cyan,  selborderclr  },
 };
 
 #define VASTR(...) ((const char*[]){__VA_ARGS__, NULL})
@@ -90,7 +85,7 @@ static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 
 #define SCRATCHPADS \
     SP(0, Mod, XK_g, 2, "log", VASTR("st", "-n", "log", "-e", "log")) \
-    SP(1, Mod, XK_c, 1, "calc", VASTR("mate-calc")) \
+    SP(1, Mod, XK_c, 2, "mate-calc", VASTR("mate-calc")) \
     SP(2, Mod, XK_i, 1, "gpick", VASTR("gpick")) \
 
 typedef struct {
@@ -99,10 +94,10 @@ typedef struct {
 } Sp;
 static Sp scratchpads[] = {
     /* name, cmd  */
-#define SP(tagnum, mod, key, isfloating, name, cmd) \
-    {name, cmd},
-    SCRATCHPADS
-#undef SP
+    #define SP(tagnum, mod, key, isfloating, name, cmd) \
+        {name, cmd},
+        SCRATCHPADS
+    #undef SP
 };
 
 static const Rule rules[] = {
@@ -115,13 +110,13 @@ static const Rule rules[] = {
     { "Nitroge",          NULL,       NULL,       0,            1,           -1 },
     { "Blueman-manager",  NULL,       NULL,       0,            1,           -1 },
     { "Pavucontrol",      NULL,       NULL,       0,            1,           -1 },
-    { "Gnome-calculator", NULL,       NULL,       0,            1,           -1 },
+    { "Gnome-calculator", NULL,       NULL,       0,            2,           -1 },
     { "VirtualBox",       NULL,       NULL,       0,            1,           -1 },
     { "Firefox",          NULL,       NULL,       1 << 8,       0,           -1 },
-#define SP(tagnum, mod, key, isfloating, name, cmd) \
-    { NULL, name, NULL, SPTAG(tagnum), isfloating, -1 },
-    SCRATCHPADS
-#undef SP
+    #define SP(tagnum, mod, key, isfloating, name, cmd) \
+        { NULL, name, NULL, SPTAG(tagnum), isfloating, -1 },
+        SCRATCHPADS
+    #undef SP
 };
 
 /* commands */
@@ -130,17 +125,17 @@ static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont,
 
 static const Key keys[] = {
     /* modifier                     key                function        argument */
-#define SP(tagnum, mod, key, isfloating, name, cmd) \
-    {mod, key, togglescratch, {.ui = tagnum }},
-    SCRATCHPADS
-#undef SP
-#define TAGKEY(key, tagnum) \
-    { Mod,          key, view,       {.ui = 1 << tagnum} }, \
-    { CtrlMod,      key, toggleview, {.ui = 1 << tagnum} }, \
-    { ShiftMod,     key, tag,        {.ui = 1 << tagnum} }, \
-    { CtrlShiftMod, key, toggletag,  {.ui = 1 << tagnum} },
-    TAGKEYS
-#undef TAGKEY
+    #define SP(tagnum, mod, key, isfloating, name, cmd) \
+        {mod, key, togglescratch, {.ui = tagnum }},
+        SCRATCHPADS
+    #undef SP
+    #define TAGKEY(key, tagnum) \
+        { Mod,          key, view,       {.ui = 1 << tagnum} }, \
+        { CtrlMod,      key, toggleview, {.ui = 1 << tagnum} }, \
+        { ShiftMod,     key, tag,        {.ui = 1 << tagnum} }, \
+        { CtrlShiftMod, key, toggletag,  {.ui = 1 << tagnum} },
+        TAGKEYS
+    #undef TAGKEY
     { Mod,      XK_0,            view,           {.ui = ~0 } },
     { ShiftMod, XK_0,            tag,            {.ui = ~0 } },
     { Mod,      XK_comma,        focusmon,       {.i = -1 } },
@@ -156,12 +151,12 @@ static const Key keys[] = {
     { ShiftMod, XK_b,            spawn,          CMD("nitrogen", "--random", "--set-zoom-fill", "--save") },
     { ShiftMod, XK_p,            spawn,          SHCMD("source ~/.xprofile") },
     { ShiftMod, XK_d,            spawn,          CMD("xkill") },
-    { Mod,      XK_backslash,    spawn,          CMD("dmenu-emoji", "!") },
-    { ShiftMod, XK_backslash,    spawn,          CMD("dmenu-emoji") },
+    { Mod,      XK_slash,        spawn,          CMD("dmenu-emoji", "!") },
+    { ShiftMod, XK_slash,        spawn,          CMD("dmenu-emoji") },
     { CtrlMod,  XK_b,            togglebar,      {0} },
-    { Mod,      XK_slash,        setgaps,        {.i = GAP_TOGGLE} },
-    { Alt,      XK_slash,        setgaps,        {.i = +5} },
-    { ShiftAlt, XK_slash,        setgaps,        {.i = -5} },
+    { Mod,      XK_backslash,    setgaps,        {.i = GAP_TOGGLE} },
+    { Alt,      XK_backslash,    setgaps,        {.i = +5} },
+    { ShiftAlt, XK_backslash,    setgaps,        {.i = -5} },
     { Mod,      XK_w,            tabmode,        {-1} },
     { Mod,      XK_j,            focusstack,     {.i = +1 } },
     { Mod,      XK_k,            focusstack,     {.i = -1 } },
