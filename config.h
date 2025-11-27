@@ -201,23 +201,32 @@ static const Key keys[] = {
 
 /* button definitions */
 /* click can be ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle, ClkClientWin, or ClkRootWin */
+
+#define LeftClick   Button1
+#define MiddleClick Button2
+#define RightClick  Button3
+#define ScrollUp    Button4
+#define ScrollDown  Button5
+
 static const Button buttons[] = {
     /* click + mask       button   function        argument */
-    { ClkLtSymbol,   0,   Button1, setlayout,      {0} },
-    { ClkLtSymbol,   0,   Button3, setlayout,      {.v = &layouts[2]} },
-    { ClkWinTitle,   0,   Button2, zoom,           {0} },
-    { ClkStatusText, 0,   Button1, sigstatusbar,   {.i = 1} },
-    { ClkStatusText, 0,   Button2, sigstatusbar,   {.i = 2} },
-    { ClkStatusText, 0,   Button3, sigstatusbar,   {.i = 3} },
-    { ClkStatusText, 0,   Button4, sigstatusbar,   {.i = 4} },
-    { ClkStatusText, 0,   Button5, sigstatusbar,   {.i = 5} },
-    { ClkClientWin,  Mod, Button1, movemouse,      {0} },
-    { ClkClientWin,  Mod, Button2, togglefloating, {0} },
-    { ClkClientWin,  Mod, Button3, resizemouse,    {0} },
-    { ClkTagBar,     0,   Button1, view,           {0} },
-    { ClkTagBar,     0,   Button3, toggleview,     {0} },
-    { ClkTagBar,     Mod, Button1, tag,            {0} },
-    { ClkTagBar,     Mod, Button3, toggletag,      {0} },
-    { ClkTabBar,     0,   Button1, focuswin,       {0} },
+    { ClkLtSymbol,   0,   LeftClick,   setlayout,      {0} },
+    { ClkLtSymbol,   0,   RightClick,  setlayout,      {.v = &layouts[2]} },
+    { ClkWinTitle,   0,   MiddleClick, zoom,           {0} },
+    { ClkStatusText, 0,   LeftClick,   sigstatusbar,   {.i = 1} },
+    { ClkStatusText, 0,   MiddleClick, sigstatusbar,   {.i = 2} },
+    { ClkStatusText, 0,   RightClick,  sigstatusbar,   {.i = 3} },
+    { ClkStatusText, 0,   ScrollUp,    sigstatusbar,   {.i = 4} },
+    { ClkStatusText, 0,   ScrollDown,  sigstatusbar,   {.i = 5} },
+    { ClkClientWin,  Mod, LeftClick,   movemouse,      {0} },
+    { ClkClientWin,  Mod, MiddleClick, togglefloating, {0} },
+    { ClkClientWin,  Mod, RightClick,  resizemouse,    {0} },
+    { ClkTagBar,     0,   LeftClick,   view,           {0} },
+    { ClkTagBar,     0,   RightClick,  toggleview,     {0} },
+    { ClkTagBar,     Mod, LeftClick,   tag,            {0} },
+    { ClkTagBar,     Mod, RightClick,  toggletag,      {0} },
+    { ClkTabBar,     0,   LeftClick,   focuswin,       {0} },
+    { ClkTabBar,     0,   MiddleClick, killclient,     {0} },
+    { ClkTabBar,     0,   RightClick,  togglefloating, {0} },
 };
 

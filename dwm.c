@@ -1255,17 +1255,23 @@ focusstack(const Arg *arg)
 	}
 }
 
+Client *
+tabclickedclient(int iwin)
+{
+	Client* c = NULL;
+	for(c = selmon->clients; c && (iwin || !ISVISIBLE(c)) ; c = c->next){
+		if(ISVISIBLE(c)) --iwin;
+	};
+	return c;
+}
+
 void
 focuswin(const Arg* arg){
-  int iwin = arg->i;
-  Client* c = NULL;
-  for(c = selmon->clients; c && (iwin || !ISVISIBLE(c)) ; c = c->next){
-    if(ISVISIBLE(c)) --iwin;
-  };
-  if(c) {
-    focus(c);
-    restack(selmon);
-  }
+	Client *c;
+	if ((c = tabclickedclient(arg->i))) {
+		focus(c);
+		restack(selmon);
+	}
 }
 
 Atom
@@ -1464,14 +1470,17 @@ keypress(XEvent *e)
 void
 killclient(const Arg *arg)
 {
-	if (!selmon->sel)
-		return;
+	Client *c = arg ?
+		tabclickedclient(arg->i) :
+		selmon->sel;
 
-	if (!sendevent(selmon->sel->win, wmatom[WMDelete], NoEventMask, wmatom[WMDelete], CurrentTime, 0 , 0, 0)) {
+	if (!c) return;
+
+	if (!sendevent(c->win, wmatom[WMDelete], NoEventMask, wmatom[WMDelete], CurrentTime, 0 , 0, 0)) {
 		XGrabServer(dpy);
 		XSetErrorHandler(xerrordummy);
 		XSetCloseDownMode(dpy, DestroyAll);
-		XKillClient(dpy, selmon->sel->win);
+		XKillClient(dpy, c->win);
 		XSync(dpy, False);
 		XSetErrorHandler(xerror);
 		XUngrabServer(dpy);
@@ -1599,7 +1608,7 @@ monocle(Monitor *m)
 	if (n > 0) /* override layout symbol */
 		snprintf(m->ltsymbol, sizeof m->ltsymbol, "[%d]", n);
 	for (c = nexttiled(m->clients); c; c = nexttiled(c->next))
-		resize(c, m->wx + m->gap->gappx, m->wy + m->gap->gappx, m->ww - 2 * c->bw - m->gap->gappx * 2, m->wh - 2 * c->bw - m->gap->gappx * 2, 0); 
+		resize(c, m->wx + m->gap->gappx, m->wy + m->gap->gappx, m->ww - 2 * c->bw - m->gap->gappx * 2, m->wh - 2 * c->bw - m->gap->gappx * 2, 0);
 }
 
 void
@@ -2384,9 +2393,13 @@ tabmode(const Arg *arg)
 void
 togglefloating(const Arg *arg)
 {
-	Client *c = selmon->sel;
+	Client *c = arg ?
+		tabclickedclient(arg->i) :
+		selmon->sel;
+
 	if (!c)
-		return;
+	       	return;
+
 	if (c->isfullscreen) /* no support for fullscreen windows */
 		return;
 	c->isfloating = !c->isfloating || c->isfixed;
@@ -2397,8 +2410,8 @@ togglefloating(const Arg *arg)
 		c->x = c->mon->mx + (c->mon->mw - WIDTH(c)) / 2;
 		c->y = c->mon->my + (c->mon->mh - HEIGHT(c)) / 2;
 		XMoveResizeWindow(dpy, c->win, c->x, c->y, c->w, c->h);
+		if (arg) focus(c);
 	}
-
 	arrange(selmon);
 }
 
