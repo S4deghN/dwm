@@ -230,6 +230,7 @@ static void grabkeys(void);
 static void incnmaster(const Arg *arg);
 static void keypress(XEvent *e);
 static void killclient(const Arg *arg);
+static void tabkillclient(const Arg *arg);
 static void manage(Window w, XWindowAttributes *wa);
 static void mappingnotify(XEvent *e);
 static void maprequest(XEvent *e);
@@ -272,6 +273,7 @@ static void tagmon(const Arg *arg);
 static void tile(Monitor *m);
 static void togglebar(const Arg *arg);
 static void togglefloating(const Arg *arg);
+static void tabtogglefloating(const Arg *arg);
 static void togglescratch(const Arg *arg);
 static void togglefullscr(const Arg *arg);
 static void toggletag(const Arg *arg);
@@ -1463,20 +1465,27 @@ keypress(XEvent *e)
 			keys[i].func(&(keys[i].arg));
 }
 
+void tabkillclient(const Arg *arg)
+{
+	Client *c = tabclickedclient(arg->i);
+	if (c) {
+		focus(c);
+		restack(selmon);
+		killclient(NULL);
+	}
+}
+
 void
 killclient(const Arg *arg)
 {
-	Client *c = arg ?
-		tabclickedclient(arg->i) :
-		selmon->sel;
+	if (!selmon->sel)
+		return;
 
-	if (!c) return;
-
-	if (!sendevent(c->win, wmatom[WMDelete], NoEventMask, wmatom[WMDelete], CurrentTime, 0 , 0, 0)) {
+	if (!sendevent(selmon->sel->win, wmatom[WMDelete], NoEventMask, wmatom[WMDelete], CurrentTime, 0 , 0, 0)) {
 		XGrabServer(dpy);
 		XSetErrorHandler(xerrordummy);
 		XSetCloseDownMode(dpy, DestroyAll);
-		XKillClient(dpy, c->win);
+		XKillClient(dpy, selmon->sel->win);
 		XSync(dpy, False);
 		XSetErrorHandler(xerror);
 		XUngrabServer(dpy);
@@ -1802,12 +1811,26 @@ void
 resizeclient(Client *c, int x, int y, int w, int h)
 {
 	XWindowChanges wc;
+	unsigned int n;
+	Client *nbc;
 
 	c->oldx = c->x; c->x = wc.x = x;
 	c->oldy = c->y; c->y = wc.y = y;
 	c->oldw = c->w; c->w = wc.width = w;
 	c->oldh = c->h; c->h = wc.height = h;
 	wc.border_width = c->bw;
+
+	for (n = 0, nbc = nexttiled(c->mon->clients); nbc; nbc = nexttiled(nbc->next), n++);
+
+	if (c->isfloating || c->mon->lt[c->mon->sellt]->arrange == NULL) {
+	} else {
+		if (c->mon->lt[c->mon->sellt]->arrange == monocle || n == 1) {
+			wc.border_width = 0;
+			c->w = wc.width += c->bw * 2;
+			c->h = wc.height += c->bw * 2;
+		}
+	}
+
 	XConfigureWindow(dpy, c->win, CWX|CWY|CWWidth|CWHeight|CWBorderWidth, &wc);
 	configure(c);
 	XSync(dpy, False);
@@ -2371,16 +2394,23 @@ tabmode(const Arg *arg)
 	arrange(selmon);
 }
 
+void
+tabtogglefloating(const Arg *arg) {
+	Client *c = tabclickedclient(arg->i);
+	if (c) {
+		focus(c);
+		restack(selmon);
+		togglefloating(NULL);
+	}
+}
 
 void
 togglefloating(const Arg *arg)
 {
-	Client *c = arg ?
-		tabclickedclient(arg->i) :
-		selmon->sel;
+	Client *c = selmon->sel;
 
 	if (!c)
-	       	return;
+		return;
 
 	if (c->isfullscreen) /* no support for fullscreen windows */
 		return;
@@ -2392,7 +2422,6 @@ togglefloating(const Arg *arg)
 		c->x = c->mon->mx + (c->mon->mw - WIDTH(c)) / 2;
 		c->y = c->mon->my + (c->mon->mh - HEIGHT(c)) / 2;
 		XMoveResizeWindow(dpy, c->win, c->x, c->y, c->w, c->h);
-		if (arg) focus(c);
 	}
 	arrange(selmon);
 }
