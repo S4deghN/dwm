@@ -46,47 +46,47 @@
 #include "util.h"
 
 /* macros */
-#define BUTTONMASK              (ButtonPressMask|ButtonReleaseMask)
-#define CLEANMASK(mask)         (mask & ~(numlockmask|LockMask) & (ShiftMask|ControlMask|Mod1Mask|Mod2Mask|Mod3Mask|Mod4Mask|Mod5Mask))
-#define INTERSECT(x,y,w,h,m)    (MAX(0, MIN((x)+(w),(m)->wx+(m)->ww) - MAX((x),(m)->wx)) \
-                               * MAX(0, MIN((y)+(h),(m)->wy+(m)->wh) - MAX((y),(m)->wy)))
-#define ISVISIBLE(C)            ((C->tags & C->mon->tagset[C->mon->seltags]))
-#define MOUSEMASK               (BUTTONMASK|PointerMotionMask)
-#define WIDTH(X)                ((X)->w + 2 * (X)->bw)
-#define HEIGHT(X)               ((X)->h + 2 * (X)->bw)
+#define BUTTONMASK				(ButtonPressMask|ButtonReleaseMask)
+#define CLEANMASK(mask)			(mask & ~(numlockmask|LockMask) & (ShiftMask|ControlMask|Mod1Mask|Mod2Mask|Mod3Mask|Mod4Mask|Mod5Mask))
+#define INTERSECT(x,y,w,h,m)	(MAX(0, MIN((x)+(w),(m)->wx+(m)->ww) - MAX((x),(m)->wx)) \
+							   * MAX(0, MIN((y)+(h),(m)->wy+(m)->wh) - MAX((y),(m)->wy)))
+#define ISVISIBLE(C)			((C->tags & C->mon->tagset[C->mon->seltags]))
+#define MOUSEMASK				(BUTTONMASK|PointerMotionMask)
+#define WIDTH(X)				((X)->w + 2 * (X)->bw)
+#define HEIGHT(X)				((X)->h + 2 * (X)->bw)
 #define NUMTAGS					(LENGTH(tags) + LENGTH(scratchpads))
-#define TAGMASK     			((1 << NUMTAGS) - 1)
-#define SPTAG(i) 				((1 << LENGTH(tags)) << (i))
-#define SPTAGMASK   			(((1 << LENGTH(scratchpads))-1) << LENGTH(tags))
-#define TEXTW(X)                (drw_fontset_getwidth(drw, (X)) + lrpad)
+#define TAGMASK					((1 << NUMTAGS) - 1)
+#define SPTAG(i)				((1 << LENGTH(tags)) << (i))
+#define SPTAGMASK				(((1 << LENGTH(scratchpads))-1) << LENGTH(tags))
+#define TEXTW(X)				(drw_fontset_getwidth(drw, (X)) + lrpad)
 
 #define GAP_TOGGLE 100
 #define GAP_RESET  0
 
-#define SYSTEM_TRAY_REQUEST_DOCK    0
+#define SYSTEM_TRAY_REQUEST_DOCK	0
 /* XEMBED messages */
-#define XEMBED_EMBEDDED_NOTIFY      0
-#define XEMBED_WINDOW_ACTIVATE      1
-#define XEMBED_FOCUS_IN             4
-#define XEMBED_MODALITY_ON         10
-#define XEMBED_MAPPED              (1 << 0)
-#define XEMBED_WINDOW_ACTIVATE      1
-#define XEMBED_WINDOW_DEACTIVATE    2
-#define VERSION_MAJOR               0
-#define VERSION_MINOR               0
+#define XEMBED_EMBEDDED_NOTIFY		0
+#define XEMBED_WINDOW_ACTIVATE		1
+#define XEMBED_FOCUS_IN				4
+#define XEMBED_MODALITY_ON		   10
+#define XEMBED_MAPPED			   (1 << 0)
+#define XEMBED_WINDOW_ACTIVATE		1
+#define XEMBED_WINDOW_DEACTIVATE	2
+#define VERSION_MAJOR				0
+#define VERSION_MINOR				0
 #define XEMBED_EMBEDDED_VERSION (VERSION_MAJOR << 16) | VERSION_MINOR
 
 /* enums */
 enum { CurNormal, CurResize, CurMove, CurLast }; /* cursor */
 enum { SchemeNorm, SchemeSel }; /* color schemes */
 enum { NetSupported, NetWMName, NetWMState, NetWMCheck,
-       NetSystemTray, NetSystemTrayOP, NetSystemTrayOrientation, NetSystemTrayOrientationHorz,
-       NetWMFullscreen, NetActiveWindow, NetWMWindowType,
-       NetWMWindowTypeDialog, NetClientList, NetClientInfo, NetLast }; /* EWMH atoms */
+	   NetSystemTray, NetSystemTrayOP, NetSystemTrayOrientation, NetSystemTrayOrientationHorz,
+	   NetWMFullscreen, NetActiveWindow, NetWMWindowType,
+	   NetWMWindowTypeDialog, NetClientList, NetClientInfo, NetLast }; /* EWMH atoms */
 enum { Manager, Xembed, XembedInfo, XLast }; /* Xembed atoms */
 enum { WMProtocols, WMDelete, WMState, WMTakeFocus, WMLast }; /* default atoms */
 enum { ClkTagBar, ClkTabBar, ClkLtSymbol, ClkStatusText, ClkWinTitle,
-       ClkClientWin, ClkRootWin, ClkLast }; /* clicks */
+	   ClkClientWin, ClkRootWin, ClkLast }; /* clicks */
 
 typedef union {
 	int i;
@@ -146,10 +146,10 @@ struct Monitor {
 	float mfact;
 	int nmaster;
 	int num;
-	int by;               /* bar geometry */
-	int ty;               /* tab bar geometry */
-	int mx, my, mw, mh;   /* screen size */
-	int wx, wy, ww, wh;   /* window area  */
+	int by;				  /* bar geometry */
+	int ty;				  /* tab bar geometry */
+	int mx, my, mw, mh;	  /* screen size */
+	int wx, wy, ww, wh;	  /* window area  */
 	Gap *gap;
 	unsigned int seltags;
 	unsigned int sellt;
@@ -179,7 +179,7 @@ typedef struct {
 	int monitor;
 } Rule;
 
-typedef struct Systray   Systray;
+typedef struct Systray	 Systray;
 struct Systray {
 	Window win;
 	Client *icons;
@@ -312,10 +312,10 @@ static int statusw;
 static int statussig;
 static pid_t statuspid = -1;
 static int screen;
-static int sw, sh;           /* X display screen geometry width, height */
-static int bh;               /* bar height */
-static int th = 0;           /* tab bar geometry */
-static int lrpad;            /* sum of left and right padding for text */
+static int sw, sh;			 /* X display screen geometry width, height */
+static int bh;				 /* bar height */
+static int th = 0;			 /* tab bar geometry */
+static int lrpad;			 /* sum of left and right padding for text */
 static int (*xerrorxlib)(Display *, XErrorEvent *);
 static unsigned int numlockmask = 0;
 static void (*handler[LASTEvent]) (XEvent *) = {
@@ -389,8 +389,8 @@ applyrules(Client *c)
 	c->isfloating = 0;
 	c->tags = 0;
 	XGetClassHint(dpy, c->win, &ch);
-	class    = ch.res_class ? ch.res_class : broken;
-	instance = ch.res_name  ? ch.res_name  : broken;
+	class	 = ch.res_class ? ch.res_class : broken;
+	instance = ch.res_name	? ch.res_name  : broken;
 
 	for (i = 0; i < LENGTH(rules); i++) {
 		r = &rules[i];
@@ -551,8 +551,8 @@ buttonpress(XEvent *e)
 			click = ClkLtSymbol;
 		else if (ev->x > selmon->ww - (int)TEXTW(stext) - getsystraywidth()) {
 			x = selmon->ww - statusw;
-            // Fix offset because of systray
-            x -= getsystraywidth() + systrayspacing * 5;
+			// Fix offset because of systray
+			x -= getsystraywidth() + systrayspacing * 5;
 			click = ClkStatusText;
 			statussig = 0;
 			for (text = s = stext; *s && x <= ev->x; s++) {
@@ -727,7 +727,7 @@ clientmessage(XEvent *e)
 	if (cme->message_type == netatom[NetWMState]) {
 		if (cme->data.l[1] == netatom[NetWMFullscreen]
 		|| cme->data.l[2] == netatom[NetWMFullscreen])
-			setfullscreen(c, (cme->data.l[0] == 1 /* _NET_WM_STATE_ADD    */
+			setfullscreen(c, (cme->data.l[0] == 1 /* _NET_WM_STATE_ADD	  */
 				|| (cme->data.l[0] == 2 /* _NET_WM_STATE_TOGGLE */ && !c->isfullscreen)));
 	} else if (cme->message_type == netatom[NetActiveWindow]) {
 		if (c != selmon->sel && !c->isurgent)
@@ -890,7 +890,7 @@ void
 deck(Monitor *m) {
 	unsigned int i, n, h, mw, my, ns;
 	Client *c;
-    int gappx = m->gap->gappx;
+	int gappx = m->gap->gappx;
 
 	for(n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
 	if(n == 0)
@@ -1046,8 +1046,8 @@ drawtabs(void) {
 static int
 cmpint(const void *p1, const void *p2) {
   /* The actual arguments to this function are "pointers to
-     pointers to char", but strcmp(3) arguments are "pointers
-     to char", hence the following cast plus dereference */
+	 pointers to char", but strcmp(3) arguments are "pointers
+	 to char", hence the following cast plus dereference */
   return *((int*) p1) > * (int*) p2;
 }
 
@@ -1068,11 +1068,11 @@ drawtab(Monitor *m) {
 	//view_info: indicate the tag which is displayed in the view
 	for(i = 0; i < LENGTH(tags); ++i){
 	  if((selmon->tagset[selmon->seltags] >> i) & 1) {
-	    if(itag >=0){ //more than one tag selected
-	      itag = -1;
-	      break;
-	    }
-	    itag = i;
+		if(itag >=0){ //more than one tag selected
+		  itag = -1;
+		  break;
+		}
+		itag = i;
 	  }
 	}
 
@@ -1100,9 +1100,9 @@ drawtab(Monitor *m) {
 	  qsort(sorted_label_widths, m->ntabs, sizeof(int), cmpint);
 	  tot_width = view_info_w;
 	  for(i = 0; i < m->ntabs; ++i){
-	    if(tot_width + (m->ntabs - i) * sorted_label_widths[i] > m->ww)
-	      break;
-	    tot_width += sorted_label_widths[i];
+		if(tot_width + (m->ntabs - i) * sorted_label_widths[i] > m->ww)
+		  break;
+		tot_width += sorted_label_widths[i];
 	  }
 	  maxsize = (m->ww - tot_width) / (m->ntabs - i);
 	} else{
@@ -1112,15 +1112,15 @@ drawtab(Monitor *m) {
 	for(c = m->clients; c; c = c->next){
 	  if(!ISVISIBLE(c)) continue;
 	  if(i >= m->ntabs) break;
-	  if(m->tab_widths[i] >  maxsize) m->tab_widths[i] = maxsize;
+	  if(m->tab_widths[i] >	 maxsize) m->tab_widths[i] = maxsize;
 	  w = m->tab_widths[i];
 	  drw_setscheme(drw, scheme[(c == m->sel) ? SchemeSel : SchemeNorm]);
 
-      char *name = alloca(strlen(c->name) + 6);
-      char* p = name;
-      p = stpcpy(p, " [ ");
-      p = stpcpy(p, c->name);
-      p = stpcpy(p, " ]");
+	  char *name = alloca(strlen(c->name) + 6);
+	  char* p = name;
+	  p = stpcpy(p, " [ ");
+	  p = stpcpy(p, c->name);
+	  p = stpcpy(p, " ]");
 
 	  drw_text(drw, x, 0, w, th, 0, name, 0);
 	  x += w;
@@ -1144,21 +1144,21 @@ drawtab(Monitor *m) {
 void
 enternotify(XEvent *e)
 {
-    // Disabled!
+	// Disabled!
 
 	// Client *c;
 	// Monitor *m;
 	// XCrossingEvent *ev = &e->xcrossing;
 
 	// if ((ev->mode != NotifyNormal || ev->detail == NotifyInferior) && ev->window != root)
-	// 	return;
+	//	return;
 	// c = wintoclient(ev->window);
 	// m = c ? c->mon : wintomon(ev->window);
 	// if (m != selmon) {
-	// 	unfocus(selmon->sel, 1);
-	// 	selmon = m;
+	//	unfocus(selmon->sel, 1);
+	//	selmon = m;
 	// } else if (!c || c == selmon->sel)
-	// 	return;
+	//	return;
 	// focus(c);
 }
 
@@ -2075,23 +2075,23 @@ setfullscreen(Client *c, int fullscreen)
 void
 nextlayout(const Arg *arg)
 {
-    static const unsigned int layout_count = sizeof(layouts)/sizeof(layouts[0]);
-    static unsigned int layout_index;
+	static const unsigned int layout_count = sizeof(layouts)/sizeof(layouts[0]);
+	static unsigned int layout_index;
 
-    if (!arg || arg->i >= 0)
-        ++layout_index;
-    else
-        --layout_index;
+	if (!arg || arg->i >= 0)
+		++layout_index;
+	else
+		--layout_index;
 
-    setlayout(&(Arg){ .v = &layouts[layout_index%layout_count] });
+	setlayout(&(Arg){ .v = &layouts[layout_index%layout_count] });
 }
 
 void
 gap_copy(Gap *to, const Gap *from)
 {
-	to->isgap   = from->isgap;
+	to->isgap	= from->isgap;
 	to->realgap = from->realgap;
-	to->gappx   = from->gappx;
+	to->gappx	= from->gappx;
 }
 
 void
@@ -2253,12 +2253,12 @@ showhide(Client *c)
 	if (!c)
 		return;
 	if (ISVISIBLE(c)) {
-        /*
+		/*
 		if ((c->tags & SPTAGMASK) && c->isfloating) {
 			c->x = c->mon->wx + (c->mon->ww / 2 - WIDTH(c) / 2);
 			c->y = c->mon->wy + (c->mon->wh / 2 - HEIGHT(c) / 2);
 		}
-        */
+		*/
 		/* show clients top down */
 		XMoveWindow(dpy, c->win, c->x, c->y);
 		if ((!c->mon->lt[c->mon->sellt]->arrange || c->isfloating) && !c->isfullscreen)
@@ -2430,7 +2430,7 @@ void
 togglefullscr(const Arg *arg)
 {
   if(selmon->sel)
-    setfullscreen(selmon->sel, !selmon->sel->isfullscreen);
+	setfullscreen(selmon->sel, !selmon->sel->isfullscreen);
 }
 
 void
@@ -2801,7 +2801,7 @@ updatestatus(void)
 	} else {
 		char *text, *s, ch;
 
-		statusw  = 0;
+		statusw	 = 0;
 		for (text = s = stext; *s; s++) {
 			if ((unsigned char)(*s) < ' ') {
 				ch = *s;
@@ -2890,9 +2890,9 @@ updatesystray(void)
 		if (!(systray = (Systray *)calloc(1, sizeof(Systray))))
 			die("fatal: could not malloc() %u bytes\n", sizeof(Systray));
 		systray->win = XCreateSimpleWindow(dpy, root, x, m->by, w, bh, 0, 0, scheme[SchemeSel][ColBg].pixel);
-		wa.event_mask        = ButtonPressMask | ExposureMask;
+		wa.event_mask		 = ButtonPressMask | ExposureMask;
 		wa.override_redirect = True;
-		wa.background_pixel  = scheme[SchemeNorm][ColBg].pixel;
+		wa.background_pixel	 = scheme[SchemeNorm][ColBg].pixel;
 		XSelectInput(dpy, systray->win, SubstructureNotifyMask);
 		XChangeProperty(dpy, systray->win, netatom[NetSystemTrayOrientation], XA_CARDINAL, 32,
 				PropModeReplace, (unsigned char *)&netatom[NetSystemTrayOrientationHorz], 1);
@@ -2912,7 +2912,7 @@ updatesystray(void)
 	}
 	for (w = 0, i = systray->icons; i; i = i->next) {
 		/* make sure the background color stays the same */
-		wa.background_pixel  = scheme[SchemeNorm][ColBg].pixel;
+		wa.background_pixel	 = scheme[SchemeNorm][ColBg].pixel;
 		XChangeWindowAttributes(dpy, i->win, CWBackPixel, &wa);
 		XMapRaised(dpy, i->win);
 		w += systrayspacing;
