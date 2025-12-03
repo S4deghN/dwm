@@ -20,7 +20,7 @@ static const int   resizehints             = 0;            /* 1 means respect si
 static const int   lockfullscreen          = 1;            /* 1 will force focus on the fullscreen window */
 static const int   showtab                 = showtab_auto; /* Default tab bar show mode */
 static const int   toptab                  = True;         /* False means bottom tab bar */
-static const Gap   default_gap             = {.isgap = 1, .realgap = 20, .gappx = 20};
+static const Gap   default_gap             = {.isgap = 0, .realgap = 20, .gappx = 0};
 static const int   showsystray             = 1;            /* 0 means no systray */
 static const uint  systraypinning          = 0;            /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor X */
 static const uint  systrayonleft           = 0;            /* 0: systray in the right corner, >0: systray on left of status text */
@@ -29,7 +29,9 @@ static const int   systraypinningfailfirst = 1;            /* 1: if pinning fail
 
 static const char *fonts[] = {
     "SF Mono:size=10",
-    "NotoColorEmoji:size=11"
+    "Symbols Nerd Font:size=11",
+    "NotoColorEmoji:size=11",
+    "vazirmatn:size=10",
 };
 
 static const Layout layouts[] = {
@@ -40,13 +42,13 @@ static const Layout layouts[] = {
     { "[[D]]", deck },
 };
 
-static const char dmenufont[] = "monospace:size=10";
-static const char col_gray1[] = "#222222";
+static const char col_gray1[] = "#1c1c1c";
 static const char col_gray2[] = "#444444";
 static const char col_gray3[] = "#bbbbbb";
 static const char col_gray4[] = "#eeeeee";
 static const char col_cyan[]  = "#004466";
-static const char selborderclr[]  = "#99BBDD";
+// static const char selborderclr[]  = "#99BBDD";
+static const char selborderclr[]  = "#285577";
 static const char *colors[][3] = {
     /*               fg         bg         border   */
     [SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
@@ -121,6 +123,7 @@ static const Rule rules[] = {
 };
 
 /* commands */
+static const char dmenufont[] = "monospace:size=10";
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
 
@@ -154,6 +157,9 @@ static const Key keys[] = {
     { ShiftMod, XK_d,            spawn,          CMD("xkill") },
     { Mod,      XK_slash,        spawn,          CMD("dmenu-emoji", "!") },
     { ShiftMod, XK_slash,        spawn,          CMD("dmenu-emoji") },
+    { Mod,      XK_F1,           spawn,          SHCMD("systemctl poweroff") },
+    { Mod,      XK_F2,           spawn,          SHCMD("systemctl reboot") },
+    { Mod,      XK_F3,           spawn,          SHCMD("systemctl suspend") },
     { CtrlMod,  XK_b,            togglebar,      {0} },
     { Mod,      XK_backslash,    setgaps,        {.i = GAP_TOGGLE} },
     { Alt,      XK_backslash,    setgaps,        {.i = +5} },
