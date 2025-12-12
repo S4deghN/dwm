@@ -55,9 +55,9 @@ static const char *colors[][3] = {
     [SchemeSel]  = { col_gray4, col_cyan,  selborderclr  },
 };
 
-#define VASTR(...) ((const char*[]){__VA_ARGS__, NULL})
-#define CMD(...)   { .v = VASTR( __VA_ARGS__) }
-#define SHCMD(cmd) { .v = VASTR("/bin/sh", "-c", cmd) }
+#define STRARR(...) ((const char*[]){__VA_ARGS__, NULL})
+#define CMD(...)   { .v = STRARR( __VA_ARGS__) }
+#define SHCMD(cmd) { .v = STRARR("/bin/sh", "-c", cmd) }
 
 #define MODS \
     MOD(Mod, Mod4Mask) \
@@ -87,9 +87,11 @@ static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
     TAGKEY(XK_9, 8) \
 
 #define SCRATCHPADS \
-    SP(0, Mod, XK_g, 2, "log", VASTR("st", "-n", "log", "-e", "log")) \
-    SP(1, Mod, XK_c, 2, "mate-calc", VASTR("mate-calc")) \
-    SP(2, Mod, XK_i, 1, "gpick", VASTR("gpick")) \
+    SP(0, Mod, XK_g, 2, "log", STRARR("st", "-n", "log", "-e", "log")) \
+    SP(1, ShiftMod, XK_g, 2, "todo", STRARR("/bin/sh", "-c", "st -n todo -e $EDITOR $HOME/note/todo/todo.adoc")) \
+    SP(2, ShiftMod, XK_w, 2, "dict", STRARR("st", "-n", "dict", "-e", "dict")) \
+    SP(3, Mod, XK_c, 2, "qalculate-qt", STRARR("qalculate-qt")) \
+    SP(4, Mod, XK_i, 1, "gpick", STRARR("gpick")) \
 
 typedef struct {
     const char *name;
@@ -192,8 +194,11 @@ static const Key keys[] = {
 #undef notif
 #define notif "notify-send -r 1 -t 2000 -i audio-volume-medium "
     {0, XF86XK_AudioRaiseVolume,  spawn, SHCMD(notif"\"volume: $(pamixer --allow-boost --increase 5 --get-volume-human)\"") },
+    {Mod, XK_F12,                 spawn, SHCMD(notif"\"volume: $(pamixer --allow-boost --increase 5 --get-volume-human)\"") },
     {0, XF86XK_AudioLowerVolume,  spawn, SHCMD(notif"\"volume: $(pamixer --allow-boost --decrease 5 --get-volume-human)\"") },
+    {Mod, XK_F11,                 spawn, SHCMD(notif"\"volume: $(pamixer --allow-boost --decrease 5 --get-volume-human)\"") },
     {0, XF86XK_AudioMute,         spawn, SHCMD(notif"\"volume: $(pamixer --toggle-mute  --get-volume-human)\"") },
+    {Mod, XK_F10,                 spawn, SHCMD(notif"\"volume: $(pamixer --toggle-mute  --get-volume-human)\"") },
     {0, XF86XK_AudioMicMute,      spawn, SHCMD(notif"\"mic: $(pactl set-source-mute @DEFAULT_SOURCE@ toggle && pactl get-source-mute @DEFAULT_SOURCE@)\"") },
 #undef notif
     {0, XF86XK_AudioPrev,         spawn, CMD("playerctl", "prev") },
