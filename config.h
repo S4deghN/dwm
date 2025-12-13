@@ -89,7 +89,7 @@ static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 #define SCRATCHPADS \
     SP(0, Mod, XK_g, 2, "log", STRARR("st", "-n", "log", "-e", "log")) \
     SP(1, ShiftMod, XK_g, 2, "todo", STRARR("/bin/sh", "-c", "st -n todo -e $EDITOR $HOME/note/todo/todo.adoc")) \
-    SP(2, ShiftMod, XK_w, 2, "dict", STRARR("st", "-n", "dict", "-e", "dict")) \
+    SP(2, Mod, XK_w, 2, "dict", STRARR("st", "-f", "monospace-14", "-n", "dict", "-e", "dict")) \
     SP(3, Mod, XK_c, 2, "qalculate-qt", STRARR("qalculate-qt")) \
     SP(4, Mod, XK_i, 1, "gpick", STRARR("gpick")) \
 
@@ -166,7 +166,7 @@ static const Key keys[] = {
     { Mod,      XK_backslash,    setgaps,        {.i = GAP_TOGGLE} },
     { Alt,      XK_backslash,    setgaps,        {.i = +5} },
     { ShiftAlt, XK_backslash,    setgaps,        {.i = -5} },
-    { Mod,      XK_w,            tabmode,        {-1} },
+    { ShiftMod, XK_w,            tabmode,        {-1} },
     { Mod,      XK_j,            focusstack,     {.i = +1 } },
     { Mod,      XK_k,            focusstack,     {.i = -1 } },
     { ShiftMod, XK_j,            movestack,      {.i = +1 } },
