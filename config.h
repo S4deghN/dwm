@@ -193,13 +193,15 @@ static const Key keys[] = {
     {Mod, XK_Print, spawn, SHCMD("import " screenshot_path " && " notif) },
 #undef notif
 #define notif "notify-send -r 1 -t 2000 -i audio-volume-medium "
-    {0, XF86XK_AudioRaiseVolume,  spawn, SHCMD(notif"\"volume: $(pamixer --allow-boost --increase 5 --get-volume-human)\"") },
-    {Mod, XK_F12,                 spawn, SHCMD(notif"\"volume: $(pamixer --allow-boost --increase 5 --get-volume-human)\"") },
-    {0, XF86XK_AudioLowerVolume,  spawn, SHCMD(notif"\"volume: $(pamixer --allow-boost --decrease 5 --get-volume-human)\"") },
-    {Mod, XK_F11,                 spawn, SHCMD(notif"\"volume: $(pamixer --allow-boost --decrease 5 --get-volume-human)\"") },
-    {0, XF86XK_AudioMute,         spawn, SHCMD(notif"\"volume: $(pamixer --toggle-mute  --get-volume-human)\"") },
-    {Mod, XK_F10,                 spawn, SHCMD(notif"\"volume: $(pamixer --toggle-mute  --get-volume-human)\"") },
-    {0, XF86XK_AudioMicMute,      spawn, SHCMD(notif"\"mic: $(pactl set-source-mute @DEFAULT_SOURCE@ toggle && pactl get-source-mute @DEFAULT_SOURCE@)\"") },
+#define sig "&& kill -41 $(pidof dwm-status)"
+    {0, XF86XK_AudioRaiseVolume,  spawn, SHCMD(notif"\"volume: $(pamixer --allow-boost --increase 5 --get-volume-human)\"" sig) },
+    {Mod, XK_F12,                 spawn, SHCMD(notif"\"volume: $(pamixer --allow-boost --increase 5 --get-volume-human)\"" sig) },
+    {0, XF86XK_AudioLowerVolume,  spawn, SHCMD(notif"\"volume: $(pamixer --allow-boost --decrease 5 --get-volume-human)\"" sig) },
+    {Mod, XK_F11,                 spawn, SHCMD(notif"\"volume: $(pamixer --allow-boost --decrease 5 --get-volume-human)\"" sig) },
+    {0, XF86XK_AudioMute,         spawn, SHCMD(notif"\"volume: $(pamixer --toggle-mute  --get-volume-human)\"" sig) },
+    {Mod, XK_F10,                 spawn, SHCMD(notif"\"volume: $(pamixer --toggle-mute  --get-volume-human)\"" sig) },
+    {0, XF86XK_AudioMicMute,      spawn, SHCMD(notif"\"mic: $(pactl set-source-mute @DEFAULT_SOURCE@ toggle && pactl get-source-mute @DEFAULT_SOURCE@)\"" sig) },
+#undef sig
 #undef notif
     {0, XF86XK_AudioPrev,         spawn, CMD("playerctl", "prev") },
     {0, XF86XK_AudioNext,         spawn, CMD("playerctl", "next") },
