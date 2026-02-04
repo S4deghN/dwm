@@ -25,7 +25,7 @@ static const int   systraypinningfailfirst = 1;            /* 1: if pinning fail
 static const int   showsystray             = 1;            /* 0 means no systray */
 static const int   showtab                 = showtab_auto; /* Default tab bar show mode */
 static const int   toptab                  = True;         /* False means bottom tab bar */
-static const Gap   default_gap             = {.isgap = 0, .realgap = 20, .gappx = 0};
+static const Gap   default_gap             = {.isgap = 0, .realgap = 20, .gappx = 20};
 
 static const char *fonts[] = {
     "SF Mono:size=10",
@@ -48,7 +48,8 @@ static const char col_gray3[] = "#bbbbbb";
 static const char col_gray4[] = "#eeeeee";
 static const char col_cyan[]  = "#004466";
 // static const char selborderclr[]  = "#99BBDD";
-static const char selborderclr[]  = "#285577";
+// static const char selborderclr[]  = "#775528";
+static const char selborderclr[]  = "#882222";
 static const char *colors[][3] = {
     /*               fg         bg         border   */
     [SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
@@ -148,10 +149,10 @@ static const Key keys[] = {
     { Mod,      XK_period,       focusmon,       {.i = +1 } },
     { ShiftMod, XK_comma,        tagmon,         {.i = -1 } },
     { ShiftMod, XK_period,       tagmon,         {.i = +1 } },
-    { ShiftMod, XK_x,            spawn,          CMD("rofi", "-show", "run") },
     { Mod,      XK_x,            spawn,          {.v = dmenucmd } },
     { Mod,      XK_t,            spawn,          CMD("st") },
-    { Mod,      XK_a,            spawn,          CMD("rofi", "-show", "drun") },
+    { Mod,      XK_a,            spawn,          CMD("rofi", "-show", "run") },
+    { ShiftMod, XK_a,            spawn,          CMD("rofi", "-show", "drun") },
     { Mod,      XK_r,            spawn,          CMD("st", "-e", "ranger") },
     { Mod,      XK_b,            spawn,          CMD("pcmanfm") },
     { ShiftMod, XK_b,            spawn,          CMD("nitrogen", "--random", "--set-zoom-fill", "--save") },
