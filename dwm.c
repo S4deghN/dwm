@@ -1085,6 +1085,7 @@ drawtab(Monitor *m) {
 	m->ntabs = 0;
 	for(c = m->clients; c; c = c->next){
 	  if(!ISVISIBLE(c)) continue;
+	  if(c->isfloating) continue;
 	  m->tab_widths[m->ntabs] = TEXTW(c->name) + TEXTW("[]");
 	  tot_width += m->tab_widths[m->ntabs];
 	  ++m->ntabs;
@@ -1107,6 +1108,7 @@ drawtab(Monitor *m) {
 	i = 0;
 	for(c = m->clients; c; c = c->next){
 	  if(!ISVISIBLE(c)) continue;
+	  if(c->isfloating) continue;
 	  if(i >= m->ntabs) break;
 	  if(m->tab_widths[i] >	 maxsize) m->tab_widths[i] = maxsize;
 	  w = m->tab_widths[i];
