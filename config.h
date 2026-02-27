@@ -46,7 +46,7 @@ static const char col_gray1[] = "#1c1c1c";
 static const char col_gray2[] = "#444444";
 static const char col_gray3[] = "#bbbbbb";
 static const char col_gray4[] = "#eeeeee";
-static const char col_cyan[]  = "#004466";
+static const char col_cyan[]  = "#005577";
 // static const char selborderclr[]  = "#99BBDD";
 // static const char selborderclr[]  = "#775528";
 static const char selborderclr[]  = "#882222";
@@ -160,9 +160,9 @@ static const Key keys[] = {
     { ShiftMod, XK_d,            spawn,          CMD("xkill") },
     { Mod,      XK_slash,        spawn,          CMD("dmenu-emoji", "!") },
     { ShiftMod, XK_slash,        spawn,          CMD("dmenu-emoji") },
-    { Mod,      XK_F1,           spawn,          SHCMD("systemctl poweroff") },
-    { Mod,      XK_F2,           spawn,          SHCMD("systemctl reboot") },
-    { Mod,      XK_F3,           spawn,          SHCMD("systemctl suspend") },
+    { ShiftMod, XK_F1,           spawn,          SHCMD("systemctl poweroff") },
+    { ShiftMod, XK_F2,           spawn,          SHCMD("systemctl reboot") },
+    { ShiftMod, XK_F3,           spawn,          SHCMD("systemctl suspend") },
     { CtrlMod,  XK_b,            togglebar,      {0} },
     { Mod,      XK_backslash,    setgaps,        {.i = GAP_TOGGLE} },
     { Alt,      XK_backslash,    setgaps,        {.i = +5} },
