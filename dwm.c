@@ -3143,6 +3143,12 @@ zoom(const Arg *arg)
 	pop(c);
 }
 
+static void startupcmds() {
+	for (int i = 0; i < LENGTH(startup_cmds); ++i) {
+		spawn(&startup_cmds[i]);
+	}
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -3161,6 +3167,7 @@ main(int argc, char *argv[])
 		die("pledge");
 #endif /* __OpenBSD__ */
 	scan();
+	startupcmds();
 	run();
 	cleanup();
 	XCloseDisplay(dpy);

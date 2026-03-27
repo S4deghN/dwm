@@ -60,6 +60,13 @@ static const char *colors[][3] = {
 #define CMD(...)   { .v = STRARR( __VA_ARGS__) }
 #define SHCMD(cmd) { .v = STRARR("/bin/sh", "-c", cmd) }
 
+/* call spawn on each command on startup, spawn calls setsid. */
+static const Arg startup_cmds[] = {
+    CMD("xfce4-clipman"),
+    CMD("gnome-keyring-daemon", "--daemonize"),
+};
+
+
 #define MODS \
     MOD(Mod, Mod4Mask) \
     MOD(Alt, Mod1Mask)
@@ -181,6 +188,7 @@ static const Key keys[] = {
     { Mod,      XK_d,            killclient,     {0} },
     { Mod,      XK_m,            setlayout,      {0} },
     { Mod,      XK_v,            setlayout,      {.v = &layouts[3]} },
+    { ShiftAlt, XK_v,            spawn,          CMD("xfce4-popup-clipman") },
     { Mod,      XK_f,            togglefullscr,  {0} },
     { ShiftMod, XK_f,            togglefloating, {0} },
     { Mod,      XK_bracketright, nextlayout,     {.i = +1} },
