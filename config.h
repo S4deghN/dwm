@@ -49,7 +49,7 @@ static const char col_gray4[] = "#eeeeee";
 static const char col_cyan[]  = "#005577";
 // static const char selborderclr[]  = "#99BBDD";
 // static const char selborderclr[]  = "#775528";
-static const char selborderclr[]  = "#882222";
+static const char selborderclr[]  = "#227799";
 static const char *colors[][3] = {
     /*               fg         bg         border   */
     [SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
@@ -61,10 +61,10 @@ static const char *colors[][3] = {
 #define SHCMD(cmd) { .v = STRARR("/bin/sh", "-c", cmd) }
 
 /* call spawn on each command on startup, spawn calls setsid. */
-static const Arg startup_cmds[] = {
-    CMD("xfce4-clipman"),
-    CMD("gnome-keyring-daemon", "--daemonize"),
-};
+// static const Arg startup_cmds[] = {
+//     CMD("xfce4-clipman"),
+//     CMD("gnome-keyring-daemon", "--daemonize"),
+// };
 
 
 #define MODS \

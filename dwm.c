@@ -3144,9 +3144,9 @@ zoom(const Arg *arg)
 }
 
 static void startupcmds() {
-	for (int i = 0; i < LENGTH(startup_cmds); ++i) {
-		spawn(&startup_cmds[i]);
-	}
+	// for (int i = 0; i < LENGTH(startup_cmds); ++i) {
+	// 	spawn(&startup_cmds[i]);
+	// }
 }
 
 int
